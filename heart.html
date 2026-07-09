@@ -2,16 +2,18 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>心海流光</title>
-    <meta name="description" content="送给江大美女的心海流光爱心。" />
+    <meta name="description" content="一片会旋转的粒子爱心星海。" />
     <style>
       :root {
-        --background: #130718;
-        --foreground: #fff8fb;
-        --rose: #ff4f8b;
-        --gold: #ffd166;
-        --cyan: #62e8ff;
+        --bg: #030714;
+        --text: #fff8fb;
+        --soft: rgba(255, 248, 251, 0.76);
+        --dim: rgba(255, 248, 251, 0.56);
+        --pink: #ff5f9f;
+        --gold: #ffd36a;
+        --blue: #6ee7ff;
       }
 
       * {
@@ -22,8 +24,8 @@
       body {
         min-height: 100%;
         margin: 0;
-        background: var(--background);
-        color: var(--foreground);
+        background: var(--bg);
+        color: var(--text);
         font-family:
           "Microsoft YaHei",
           "PingFang SC",
@@ -34,432 +36,385 @@
       }
 
       body {
-        overflow-x: hidden;
+        overflow: hidden;
+        touch-action: none;
       }
 
-      .love-page {
+      .scene {
         position: relative;
-        display: grid;
         min-height: 100vh;
         min-height: 100svh;
-        place-items: center;
         overflow: hidden;
-        padding: clamp(18px, 3.5vh, 36px) clamp(18px, 5vw, 64px);
         isolation: isolate;
         background:
-          radial-gradient(circle at 18% 18%, rgba(98, 232, 255, 0.24), transparent 28%),
-          radial-gradient(circle at 86% 12%, rgba(255, 211, 106, 0.2), transparent 24%),
-          radial-gradient(circle at 48% 56%, rgba(255, 79, 139, 0.24), transparent 34%),
-          linear-gradient(145deg, #081420 0%, #1c0f2b 46%, #071d2c 100%);
+          radial-gradient(circle at 50% 36%, rgba(255, 95, 159, 0.2), transparent 28%),
+          radial-gradient(circle at 18% 20%, rgba(110, 231, 255, 0.2), transparent 30%),
+          radial-gradient(circle at 82% 84%, rgba(255, 211, 106, 0.13), transparent 28%),
+          linear-gradient(180deg, #030714 0%, #100a25 48%, #061525 100%);
       }
 
-      .love-page::before,
-      .love-page::after {
+      .scene::before {
         position: absolute;
+        inset: -15%;
         z-index: -1;
-        border-radius: 999px;
+        background:
+          conic-gradient(
+            from 220deg at 50% 48%,
+            transparent,
+            rgba(110, 231, 255, 0.1),
+            transparent,
+            rgba(255, 95, 159, 0.13),
+            transparent
+          );
         content: "";
-        filter: blur(16px);
+        animation: slowSpin 18s linear infinite;
+        filter: blur(8px);
       }
 
-      .love-page::before {
-        width: min(62vw, 580px);
-        height: min(62vw, 580px);
-        background: radial-gradient(circle, rgba(240, 24, 97, 0.22), transparent 67%);
-        inset: 8% auto auto -18%;
-      }
-
-      .love-page::after {
-        right: -15%;
-        bottom: -18%;
-        width: min(58vw, 540px);
-        height: min(58vw, 540px);
-        background: radial-gradient(circle, rgba(99, 210, 255, 0.18), transparent 65%);
-      }
-
-      .sea-ribbon {
+      #heartCanvas {
         position: absolute;
         inset: 0;
-        z-index: -1;
-        overflow: hidden;
-        pointer-events: none;
-      }
-
-      .sea-ribbon span {
-        position: absolute;
-        left: -18%;
-        width: 138%;
-        height: 2px;
-        border-radius: 999px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(98, 232, 255, 0.08),
-          rgba(255, 248, 251, 0.38),
-          rgba(255, 90, 154, 0.18),
-          transparent
-        );
-        opacity: 0.68;
-        transform: translateX(-22%) rotate(var(--rotate));
-        animation: seaFlow var(--duration) linear infinite;
-        animation-delay: var(--delay);
-        filter: blur(0.2px);
-      }
-
-      .star-layer {
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        overflow: hidden;
-        pointer-events: none;
-      }
-
-      .star {
-        position: absolute;
-        left: var(--left);
-        top: var(--top);
-        width: var(--size);
-        height: var(--size);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.86);
-        box-shadow: 0 0 14px rgba(255, 255, 255, 0.75);
-        opacity: 0.28;
-        animation: twinkle var(--duration) ease-in-out infinite;
-        animation-delay: var(--delay);
-      }
-
-      .love-stage {
-        display: flex;
-        width: min(760px, 100%);
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: clamp(8px, 1.8vw, 16px);
-      }
-
-      .heart-wrap {
-        position: relative;
-        z-index: 1;
-        display: grid;
         width: 100%;
-        min-height: clamp(210px, 32vh, 280px);
-        place-items: center;
+        height: 100%;
       }
 
-      .heart-svg {
-        width: min(76vw, 310px);
-        height: auto;
-        overflow: visible;
-        animation: floatHeart 4.8s ease-in-out infinite;
-        filter:
-          drop-shadow(0 30px 46px rgba(0, 0, 0, 0.33))
-          drop-shadow(0 0 36px rgba(98, 232, 255, 0.18));
-      }
-
-      .heart-shadow {
-        fill: rgba(64, 0, 31, 0.42);
-        transform: translateY(24px) scale(0.94);
-        transform-origin: 200px 190px;
-        filter: blur(14px);
-      }
-
-      .heart-core {
-        transform-origin: 200px 185px;
-        animation: heartbeat 1.55s ease-in-out infinite;
-      }
-
-      .heart-particle {
-        mix-blend-mode: screen;
-        opacity: 0.88;
-        transform-origin: center;
-        animation: particlePulse 1.9s ease-in-out infinite;
-      }
-
-      .love-copy {
-        position: relative;
-        z-index: 3;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: clamp(8px, 1.6vw, 13px);
+      .top-copy,
+      .bottom-copy {
+        position: absolute;
+        right: max(20px, env(safe-area-inset-right));
+        left: max(20px, env(safe-area-inset-left));
+        z-index: 2;
         text-align: center;
-        text-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+        text-shadow: 0 12px 36px rgba(0, 0, 0, 0.46);
+        pointer-events: none;
       }
 
-      .eyebrow {
-        margin: 0;
-        color: var(--cyan);
-        font-size: clamp(0.75rem, 1.7vw, 0.9rem);
-        font-weight: 700;
-        letter-spacing: 0.08em;
+      .top-copy {
+        top: max(24px, env(safe-area-inset-top));
+      }
+
+      .kicker {
+        margin: 0 0 9px;
+        color: var(--blue);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
       }
 
       h1 {
         margin: 0;
-        color: #fff8fb;
-        font-size: clamp(2.15rem, 4vw, 3.6rem);
-        font-weight: 800;
-        line-height: 1.05;
+        font-size: clamp(2.55rem, 13vw, 4.9rem);
+        font-weight: 900;
+        line-height: 0.96;
         letter-spacing: 0;
       }
 
-      .message {
+      .bottom-copy {
+        bottom: max(28px, env(safe-area-inset-bottom));
         display: grid;
-        max-width: 620px;
-        gap: 4px;
-        padding-top: clamp(10px, 1.7vw, 14px);
-        border-top: 3px solid rgba(98, 232, 255, 0.68);
+        gap: 10px;
+        justify-items: center;
       }
 
-      .message p,
-      .signature {
+      .note {
+        width: min(100%, 20rem);
         margin: 0;
-        color: rgba(255, 248, 251, 0.84);
-        font-size: clamp(0.94rem, 1.55vw, 1.06rem);
-        line-height: 1.62;
+        color: var(--soft);
+        font-size: clamp(0.94rem, 3.8vw, 1.08rem);
+        line-height: 1.76;
       }
 
-      .message p:last-child {
+      .note strong {
         color: #ffffff;
-        font-size: clamp(1.18rem, 2.2vw, 1.55rem);
-        font-weight: 800;
+        font-weight: 850;
       }
 
-      .signature {
-        color: rgba(255, 211, 106, 0.9);
-        font-weight: 700;
+      .hint {
+        margin: 2px 0 0;
+        color: var(--dim);
+        font-size: 0.82rem;
+        letter-spacing: 0.06em;
       }
 
-      .tap-heart {
-        position: fixed;
-        z-index: 10;
-        color: #ff75a5;
-        font-size: 26px;
-        line-height: 1;
-        pointer-events: none;
-        text-shadow: 0 0 18px rgba(255, 117, 165, 0.8);
-        transform: translate(-50%, -50%);
-        animation: tapHeart 1.2s ease-out forwards;
+      .back-link {
+        position: absolute;
+        top: max(18px, env(safe-area-inset-top));
+        left: max(16px, env(safe-area-inset-left));
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: rgba(255, 248, 251, 0.86);
+        font-size: 1.25rem;
+        text-decoration: none;
+        backdrop-filter: blur(12px);
       }
 
-      @keyframes heartbeat {
-        0%,
-        100% {
-          transform: scale(1);
+      @media (min-width: 760px) {
+        .top-copy {
+          top: 42px;
         }
 
-        18% {
-          transform: scale(1.075);
+        .bottom-copy {
+          bottom: 46px;
         }
 
-        36% {
-          transform: scale(0.985);
-        }
-
-        52% {
-          transform: scale(1.045);
-        }
-      }
-
-      @keyframes floatHeart {
-        0%,
-        100% {
-          transform: translateY(0) rotate(-1deg);
-        }
-
-        50% {
-          transform: translateY(-18px) rotate(1.2deg);
+        .note {
+          width: min(100%, 34rem);
         }
       }
 
-      @keyframes particlePulse {
-        0%,
-        100% {
-          opacity: 0.52;
-          transform: scale(0.72);
-        }
-
-        45% {
-          opacity: 1;
-          transform: scale(1.45);
-        }
-      }
-
-      @keyframes twinkle {
-        0%,
-        100% {
-          opacity: 0.18;
-          transform: scale(0.65);
-        }
-
-        50% {
-          opacity: 0.95;
-          transform: scale(1.16);
-        }
-      }
-
-      @keyframes seaFlow {
-        from {
-          transform: translateX(-22%) rotate(var(--rotate));
-        }
-
+      @keyframes slowSpin {
         to {
-          transform: translateX(22%) rotate(var(--rotate));
-        }
-      }
-
-      @keyframes tapHeart {
-        0% {
-          opacity: 0;
-          transform: translate(-50%, -50%) scale(0.55);
-        }
-
-        18% {
-          opacity: 1;
-        }
-
-        100% {
-          opacity: 0;
-          transform: translate(calc(-50% + var(--drift)), -150px) scale(1.45);
-        }
-      }
-
-      @media (max-width: 780px) {
-        .love-page {
-          padding-block: 22px 32px;
-        }
-
-        .heart-wrap {
-          min-height: min(36svh, 260px);
-        }
-
-        .heart-svg {
-          width: min(88vw, 286px);
-        }
-
-        .message {
-          max-width: 34em;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          scroll-behavior: auto !important;
-          animation-duration: 0.001ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.001ms !important;
+          transform: rotate(360deg);
         }
       }
     </style>
   </head>
   <body>
-    <main class="love-page" aria-label="心海流光爱心动画">
-      <div class="sea-ribbon" aria-hidden="true"></div>
-      <div class="star-layer" aria-hidden="true"></div>
-      <section class="love-stage">
-        <div class="heart-wrap" aria-hidden="true">
-          <svg class="heart-svg" viewBox="0 0 400 360" role="img" aria-label="跳动的爱心">
-            <defs>
-              <radialGradient id="heartGlow" cx="50%" cy="42%" r="58%">
-                <stop offset="0%" stop-color="#fff1f6" />
-                <stop offset="34%" stop-color="#ff7aa8" />
-                <stop offset="72%" stop-color="#f01861" />
-                <stop offset="100%" stop-color="#990c39" />
-              </radialGradient>
-              <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
-                <feGaussianBlur stdDeviation="8" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <path
-              class="heart-shadow"
-              d="M200 315C127 256 69 203 69 135C69 86 103 54 148 54C174 54 192 67 200 86C208 67 226 54 252 54C297 54 331 86 331 135C331 203 273 256 200 315Z"
-            ></path>
-            <path
-              class="heart-core"
-              d="M200 315C127 256 69 203 69 135C69 86 103 54 148 54C174 54 192 67 200 86C208 67 226 54 252 54C297 54 331 86 331 135C331 203 273 256 200 315Z"
-              fill="url(#heartGlow)"
-              filter="url(#softGlow)"
-            ></path>
-          </svg>
-        </div>
+    <main class="scene" aria-label="心海流光粒子爱心">
+      <canvas id="heartCanvas"></canvas>
+      <a class="back-link" href="./index.html" aria-label="返回">‹</a>
 
-        <div class="love-copy">
-          <p class="eyebrow">for jiang da mei nv</p>
-          <h1>
-            心海流光
-          </h1>
-          <div class="message" aria-label="表白文字">
-            <p>这一片光，是悄悄涌向你的心海。</p>
-            <p>每一次闪烁，都想把喜欢说得更认真一点。</p>
-            <p>江大美女，愿你看见这颗心。</p>
-          </div>
-          <p class="signature">它只为你亮。</p>
-        </div>
+      <section class="top-copy">
+        <p class="kicker">a tiny galaxy for you</p>
+        <h1>心海流光</h1>
+      </section>
+
+      <section class="bottom-copy">
+        <p class="note">
+          江大美女，送你一片会旋转的星海。<br />
+          愿今晚有一点光，刚好落进你眼里；也把一点点好心情，轻轻留给你。
+        </p>
+        <p class="note"><strong>不用急着回答什么，先看它亮一会儿。</strong></p>
+        <p class="hint">左右滑动，星星会跟着转</p>
       </section>
     </main>
 
     <script>
-      const starLayer = document.querySelector(".star-layer");
-      const seaRibbon = document.querySelector(".sea-ribbon");
-      const heartSvg = document.querySelector(".heart-svg");
+      const canvas = document.querySelector("#heartCanvas");
+      const ctx = canvas.getContext("2d", { alpha: true });
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      for (let index = 0; index < 24; index += 1) {
-        const ribbon = document.createElement("span");
-        ribbon.style.top = `${8 + index * 4}%`;
-        ribbon.style.setProperty("--rotate", `${-8 + (index % 5) * 4}deg`);
-        ribbon.style.setProperty("--duration", `${8 + (index % 7) * 1.2}s`);
-        ribbon.style.setProperty("--delay", `${index * -0.42}s`);
-        seaRibbon.appendChild(ribbon);
-      }
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+      let scale = 1;
+      let centerX = 0;
+      let centerY = 0;
+      let dragAngle = 0;
+      let lastX = 0;
+      let isDragging = false;
+      let lastTime = performance.now();
 
-      for (let index = 0; index < 54; index += 1) {
-        const star = document.createElement("span");
-        star.className = "star";
-        star.style.setProperty("--left", `${(index * 37) % 101}%`);
-        star.style.setProperty("--top", `${(index * 61) % 96}%`);
-        star.style.setProperty("--size", `${2 + (index % 4)}px`);
-        star.style.setProperty("--delay", `${(index % 9) * 0.35}s`);
-        star.style.setProperty("--duration", `${3.8 + (index % 5) * 0.55}s`);
-        starLayer.appendChild(star);
-      }
+      const particles = [];
+      const backgroundStars = [];
+      const sparkleColors = ["#fff8fb", "#ff78ad", "#ffd36a", "#6ee7ff"];
 
-      for (let index = 0; index < 112; index += 1) {
-        const t = (Math.PI * 2 * index) / 112;
-        const x = 200 + 10.2 * 16 * Math.sin(t) ** 3;
+      function heartPoint(t) {
+        const x = 16 * Math.sin(t) ** 3;
         const y =
-          176 -
-          9.4 *
-            (13 * Math.cos(t) -
-              5 * Math.cos(2 * t) -
-              2 * Math.cos(3 * t) -
-              Math.cos(4 * t));
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("class", "heart-particle");
-        circle.setAttribute("cx", x.toFixed(2));
-        circle.setAttribute("cy", y.toFixed(2));
-        circle.setAttribute("r", (2.4 + (index % 5) * 0.42).toFixed(2));
-        circle.style.animationDelay = `${(index % 28) * 0.035}s`;
-        circle.style.fill = index % 3 === 0 ? "#62e8ff" : index % 3 === 1 ? "#fff8fb" : "#ffd36a";
-        heartSvg.appendChild(circle);
+          13 * Math.cos(t) -
+          5 * Math.cos(2 * t) -
+          2 * Math.cos(3 * t) -
+          Math.cos(4 * t);
+        return { x, y };
       }
 
-      window.addEventListener("pointerdown", (event) => {
-        const heart = document.createElement("span");
-        heart.className = "tap-heart";
-        heart.textContent = "♥";
-        heart.style.left = `${event.clientX}px`;
-        heart.style.top = `${event.clientY}px`;
-        heart.style.setProperty("--drift", `${Math.random() * 70 - 35}px`);
-        document.body.appendChild(heart);
-        window.setTimeout(() => heart.remove(), 1200);
-      });
+      function rand(min, max) {
+        return min + Math.random() * (max - min);
+      }
+
+      function createHeartParticles() {
+        particles.length = 0;
+
+        for (let i = 0; i < 760; i += 1) {
+          const t = rand(0, Math.PI * 2);
+          const base = heartPoint(t);
+          const fill = 0.18 + Math.sqrt(Math.random()) * 0.82;
+          particles.push({
+            x: base.x * fill + rand(-0.18, 0.18),
+            y: base.y * fill + rand(-0.18, 0.18),
+            z: rand(-7.5, 7.5) * (0.25 + fill * 0.75),
+            size: rand(0.75, 1.95),
+            color: sparkleColors[i % sparkleColors.length],
+            phase: rand(0, Math.PI * 2),
+            glow: rand(0.45, 1)
+          });
+        }
+
+        for (let i = 0; i < 420; i += 1) {
+          const t = (Math.PI * 2 * i) / 420;
+          const base = heartPoint(t);
+          particles.push({
+            x: base.x + rand(-0.08, 0.08),
+            y: base.y + rand(-0.08, 0.08),
+            z: rand(-4, 4),
+            size: rand(1.15, 2.35),
+            color: i % 5 === 0 ? "#6ee7ff" : i % 5 === 1 ? "#ffd36a" : "#fff8fb",
+            phase: rand(0, Math.PI * 2),
+            glow: rand(0.7, 1.15)
+          });
+        }
+      }
+
+      function createBackgroundStars() {
+        backgroundStars.length = 0;
+        const count = Math.round(Math.min(160, Math.max(90, (width * height) / 7000)));
+
+        for (let i = 0; i < count; i += 1) {
+          backgroundStars.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            z: Math.random(),
+            size: rand(0.45, 1.9),
+            drift: rand(0.015, 0.06),
+            phase: rand(0, Math.PI * 2)
+          });
+        }
+      }
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        centerX = width / 2;
+        centerY = height * (width < 760 ? 0.43 : 0.45);
+        scale = Math.min(width, height) * (width < 760 ? 0.029 : 0.033);
+        createBackgroundStars();
+      }
+
+      function drawBackground(time, delta) {
+        const gradient = ctx.createRadialGradient(centerX, centerY, 20, centerX, centerY, Math.max(width, height) * 0.72);
+        gradient.addColorStop(0, "rgba(255, 95, 159, 0.1)");
+        gradient.addColorStop(0.42, "rgba(12, 22, 46, 0.35)");
+        gradient.addColorStop(1, "rgba(3, 7, 20, 0.96)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const star of backgroundStars) {
+          star.x += star.drift * delta * (0.018 + star.z * 0.026);
+          if (star.x > width + 8) {
+            star.x = -8;
+            star.y = Math.random() * height;
+          }
+
+          const alpha = 0.18 + Math.sin(time * 0.0015 + star.phase) * 0.18 + star.z * 0.34;
+          ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.05, alpha)})`;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.size * (0.7 + star.z), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function drawHeart(time) {
+        const autoAngle = prefersReducedMotion ? 0.2 : Math.sin(time * 0.00055) * 0.72;
+        const angleY = autoAngle + dragAngle;
+        const angleX = -0.1 + Math.sin(time * 0.00032) * 0.08;
+        const cosY = Math.cos(angleY);
+        const sinY = Math.sin(angleY);
+        const cosX = Math.cos(angleX);
+        const sinX = Math.sin(angleX);
+        const projected = [];
+
+        for (const p of particles) {
+          const rx = p.x * cosY - p.z * sinY;
+          const rz = p.x * sinY + p.z * cosY;
+          const ry = p.y * cosX - rz * sinX;
+          const rz2 = p.y * sinX + rz * cosX;
+          const perspective = 58 / (58 + rz2);
+          const px = centerX + rx * scale * perspective;
+          const py = centerY - ry * scale * perspective;
+          const twinkle = 0.68 + Math.sin(time * 0.003 + p.phase) * 0.32;
+
+          projected.push({
+            x: px,
+            y: py,
+            z: rz2,
+            r: Math.max(0.5, p.size * perspective * (width < 760 ? 1.05 : 1.18)),
+            color: p.color,
+            alpha: Math.min(1, (0.36 + (rz2 + 11) / 28) * twinkle * p.glow)
+          });
+        }
+
+        projected.sort((a, b) => a.z - b.z);
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const p of projected) {
+          ctx.shadowColor = p.color;
+          ctx.shadowBlur = 10 + p.r * 4;
+          ctx.fillStyle = hexToRgba(p.color, p.alpha);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      function hexToRgba(hex, alpha) {
+        const value = hex.replace("#", "");
+        const r = parseInt(value.slice(0, 2), 16);
+        const g = parseInt(value.slice(2, 4), 16);
+        const b = parseInt(value.slice(4, 6), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      }
+
+      function animate(now) {
+        const delta = Math.min(40, now - lastTime);
+        lastTime = now;
+        drawBackground(now, delta);
+        drawHeart(now);
+
+        if (!isDragging) {
+          dragAngle *= 0.985;
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+      function handlePointerDown(event) {
+        isDragging = true;
+        lastX = event.clientX;
+      }
+
+      function handlePointerMove(event) {
+        if (!isDragging) {
+          return;
+        }
+
+        const dx = event.clientX - lastX;
+        dragAngle += dx * 0.008;
+        lastX = event.clientX;
+      }
+
+      function handlePointerUp() {
+        isDragging = false;
+      }
+
+      window.addEventListener("resize", resize);
+      window.addEventListener("pointerdown", handlePointerDown);
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
+      window.addEventListener("pointercancel", handlePointerUp);
+
+      createHeartParticles();
+      resize();
+      requestAnimationFrame(animate);
     </script>
   </body>
 </html>

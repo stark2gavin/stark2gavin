@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>江大美女，想看爱心么</title>
-    <meta name="description" content="送给江大美女的一颗心海流光爱心。" />
+    <title>江大美女，来看个小动画么</title>
+    <meta name="description" content="一个适合手机观看的粒子爱心小动画。" />
     <style>
       :root {
         --bg: #100817;
         --text: #fff8fb;
         --muted: rgba(255, 248, 251, 0.72);
-        --rose: #ff5a9a;
+        --rose: #ff6b9f;
         --gold: #ffd36a;
         --cyan: #62e8ff;
       }
@@ -48,7 +48,7 @@
         isolation: isolate;
         background:
           radial-gradient(circle at 24% 18%, rgba(98, 232, 255, 0.22), transparent 28%),
-          radial-gradient(circle at 75% 25%, rgba(255, 90, 154, 0.24), transparent 26%),
+          radial-gradient(circle at 75% 25%, rgba(255, 107, 159, 0.18), transparent 26%),
           radial-gradient(circle at 50% 88%, rgba(255, 211, 106, 0.16), transparent 34%),
           linear-gradient(145deg, #100817 0%, #24122c 48%, #09182b 100%);
       }
@@ -59,7 +59,7 @@
         z-index: -1;
         background:
           linear-gradient(115deg, transparent 28%, rgba(98, 232, 255, 0.12), transparent 48%),
-          linear-gradient(245deg, transparent 34%, rgba(255, 90, 154, 0.15), transparent 58%);
+          linear-gradient(245deg, transparent 34%, rgba(255, 107, 159, 0.12), transparent 58%);
         content: "";
         animation: shimmer 7s ease-in-out infinite alternate;
       }
@@ -92,26 +92,57 @@
         text-align: center;
       }
 
-      .mini-heart {
-        width: clamp(108px, 28vw, 168px);
-        height: auto;
-        filter: drop-shadow(0 24px 44px rgba(255, 90, 154, 0.28));
+      .spark-orbit {
+        position: relative;
+        width: clamp(116px, 30vw, 170px);
+        aspect-ratio: 1;
         animation: float 4.2s ease-in-out infinite;
       }
 
-      .mini-heart path {
-        transform-origin: 100px 92px;
-        animation: heartbeat 1.7s ease-in-out infinite;
+      .spark-orbit::before {
+        position: absolute;
+        inset: 24%;
+        border-radius: 999px;
+        background:
+          radial-gradient(circle at 42% 34%, #fff8fb, transparent 11%),
+          radial-gradient(circle, rgba(98, 232, 255, 0.95), rgba(98, 232, 255, 0.12) 54%, transparent 68%);
+        box-shadow:
+          0 0 32px rgba(98, 232, 255, 0.6),
+          0 0 78px rgba(255, 107, 159, 0.26);
+        content: "";
+      }
+
+      .spark-orbit::after {
+        position: absolute;
+        inset: 9%;
+        border: 2px solid rgba(255, 248, 251, 0.32);
+        border-right-color: rgba(255, 211, 106, 0.82);
+        border-bottom-color: rgba(98, 232, 255, 0.68);
+        border-radius: 999px;
+        content: "";
+        animation: orbit 8s linear infinite;
       }
 
       h1 {
-        max-width: 9em;
+        width: min(100%, 340px);
         margin: 0;
-        font-size: clamp(2.55rem, 8vw, 5.8rem);
         font-weight: 850;
         line-height: 1.08;
         letter-spacing: 0;
         text-shadow: 0 14px 42px rgba(0, 0, 0, 0.34);
+      }
+
+      h1 span {
+        display: block;
+      }
+
+      .title-primary {
+        font-size: clamp(2.85rem, 11vw, 5.2rem);
+      }
+
+      .title-secondary {
+        font-size: clamp(1.85rem, 7vw, 4rem);
+        white-space: nowrap;
       }
 
       .subtitle {
@@ -130,10 +161,10 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 999px;
         background:
-          linear-gradient(135deg, rgba(255, 211, 106, 0.98), rgba(255, 90, 154, 0.98)),
+          linear-gradient(135deg, rgba(98, 232, 255, 0.98), rgba(255, 211, 106, 0.98)),
           var(--rose);
         box-shadow:
-          0 18px 48px rgba(255, 90, 154, 0.34),
+          0 18px 48px rgba(98, 232, 255, 0.24),
           inset 0 1px 0 rgba(255, 255, 255, 0.42);
         color: #29101b;
         font-size: 1.12rem;
@@ -152,7 +183,7 @@
         .open-button:hover {
           transform: translateY(-2px);
           box-shadow:
-            0 24px 58px rgba(255, 90, 154, 0.44),
+            0 24px 58px rgba(98, 232, 255, 0.34),
             inset 0 1px 0 rgba(255, 255, 255, 0.5);
         }
       }
@@ -178,18 +209,9 @@
         }
       }
 
-      @keyframes heartbeat {
-        0%,
-        100% {
-          transform: scale(1);
-        }
-
-        20% {
-          transform: scale(1.08);
-        }
-
-        42% {
-          transform: scale(0.98);
+      @keyframes orbit {
+        to {
+          transform: rotate(360deg);
         }
       }
 
@@ -211,23 +233,13 @@
     <main class="gate">
       <div class="stars" aria-hidden="true"></div>
       <section class="invite" aria-label="爱心邀请">
-        <svg class="mini-heart" viewBox="0 0 200 180" aria-hidden="true">
-          <defs>
-            <radialGradient id="miniGlow" cx="50%" cy="34%" r="68%">
-              <stop offset="0%" stop-color="#fff8fb" />
-              <stop offset="34%" stop-color="#ff8ab9" />
-              <stop offset="76%" stop-color="#ff2f7b" />
-              <stop offset="100%" stop-color="#9e1042" />
-            </radialGradient>
-          </defs>
-          <path
-            d="M100 162C54 124 18 91 18 48C18 20 38 6 62 6C80 6 93 16 100 31C107 16 120 6 138 6C162 6 182 20 182 48C182 91 146 124 100 162Z"
-            fill="url(#miniGlow)"
-          />
-        </svg>
-        <h1>江大美女，想看爱心么</h1>
-        <p class="subtitle">有一片心海流光，想给你看。</p>
-        <a class="open-button" href="./heart.html">想看</a>
+        <div class="spark-orbit" aria-hidden="true"></div>
+        <h1>
+          <span class="title-primary">江大美女</span>
+          <span class="title-secondary">来看个小动画么</span>
+        </h1>
+        <p class="subtitle">不煽情，就是一片会转的星星。</p>
+        <a class="open-button" href="./heart.html">看一下</a>
       </section>
     </main>
     <script>
