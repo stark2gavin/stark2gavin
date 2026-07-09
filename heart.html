@@ -132,9 +132,9 @@
       <a class="back-link" href="./index.html">返回</a>
       <section class="caption">
         <p>
-          江大美女，给你看一束光。<br />
-          它会从夜色里慢慢盛开，
-          <strong>像刚好被你撞见的温柔。</strong>
+          江大美女，给你看一场光慢慢盛开。<br />
+          不用急着想它是什么意思，
+          <strong>就当今晚的星海，刚好偏向你。</strong>
         </p>
       </section>
       <div class="rotate-tip">横屏看会更像这束光在眼前展开</div>
@@ -153,18 +153,9 @@
       let streams = [];
       let waveLines = [];
       let baseMotes = [];
+      let bloomDust = [];
+      let groundDust = [];
       let startTime = performance.now();
-
-      const codeLines = [
-        "this.length = 1; // 光",
-        "this.angle += speed;",
-        "this.color = '#bfe8ff';",
-        "heart.init();",
-        "particle.alpha *= 0.98;",
-        "wave.draw(ctx);",
-        "let x = Math.random();",
-        "const love = new Light();"
-      ];
 
       function rand(min, max) {
         return min + Math.random() * (max - min);
@@ -233,57 +224,101 @@
         streams = [];
         waveLines = [];
         baseMotes = [];
+        bloomDust = [];
+        groundDust = [];
 
-        const dotCount = landscape ? 3600 : 2100;
+        const dotCount = landscape ? 19000 : 10500;
         for (let index = 0; index < dotCount; index += 1) {
-          const outline = Math.random() < 0.72;
+          const outline = Math.random() < 0.48;
           const t = rand(0, Math.PI * 2);
-          const innerScale = outline ? rand(0.965, 1.055) : Math.sqrt(Math.random()) * rand(0.18, 0.9);
+          const innerScale = outline ? rand(0.955, 1.07) : Math.sqrt(Math.random()) * rand(0.12, 0.95);
           const point = heartPoint(t, innerScale, rand(-1.8, 1.8));
+          const tip = clamp((point.y - (layout.baseY - layout.scaleY * 4.8)) / (layout.scaleY * 5.9), 0, 1);
           const outwardX = point.x - layout.cx;
           const outwardY = point.y - layout.cy;
+          const spreadSide = Math.random() < 0.5 ? -1 : 1;
+          const groundSpread = Math.pow(tip, 1.65);
+          const targetX =
+            point.x +
+            spreadSide * groundSpread * rand(width * 0.07, width * 0.34) +
+            rand(-width * 0.03, width * 0.03) * tip;
+          const targetY = point.y + groundSpread * rand(-height * 0.035, height * 0.145);
 
           heartDots.push({
             sx: layout.baseX + rand(-34, 34),
             sy: layout.baseY + rand(-8, 8),
-            x: point.x,
-            y: point.y,
-            bloomX: outwardX * rand(0.015, 0.055),
-            bloomY: outwardY * rand(0.01, 0.04),
-            size: rand(outline ? 0.48 : 0.34, outline ? 1.45 : 0.9),
-            alpha: rand(outline ? 0.32 : 0.12, outline ? 0.82 : 0.42),
+            x: targetX,
+            y: targetY,
+            bloomX: outwardX * rand(0.018, 0.075) + spreadSide * groundSpread * rand(26, 82),
+            bloomY: outwardY * rand(0.012, 0.05) + groundSpread * rand(12, 46),
+            size: rand(outline ? 0.24 : 0.16, outline ? 0.82 : 0.56),
+            alpha: rand(outline ? 0.18 : 0.07, outline ? 0.58 : 0.32) * (1 - tip * 0.62),
             phase: rand(0, Math.PI * 2),
-            delay: rand(0, 0.88),
-            white: Math.random() < 0.22
+            delay: rand(0, 0.58),
+            white: Math.random() < 0.28
           });
         }
 
-        const streamCount = landscape ? 260 : 150;
+        const dustCount = landscape ? 9800 : 5600;
+        for (let index = 0; index < dustCount; index += 1) {
+          let t = rand(Math.PI * 0.08, Math.PI * 1.92);
+          if (Math.abs(t - Math.PI) < 0.32 && Math.random() < 0.82) {
+            t += (t < Math.PI ? -1 : 1) * rand(0.32, 0.72);
+          }
+          const outerScale = rand(1.02, 1.34);
+          const point = heartPoint(t, outerScale, rand(-8, 18));
+          const outwardX = point.x - layout.cx;
+          const outwardY = point.y - layout.cy;
+
+          bloomDust.push({
+            sx: layout.baseX + rand(-42, 42),
+            sy: layout.baseY + rand(-12, 8),
+            x: point.x + outwardX * rand(0.02, 0.1),
+            y: point.y + outwardY * rand(0.01, 0.07),
+            size: rand(0.18, Math.random() > 0.9 ? 0.86 : 0.54),
+            alpha: rand(0.06, Math.random() > 0.9 ? 0.34 : 0.2),
+            phase: rand(0, Math.PI * 2),
+            delay: rand(0, 0.72),
+            white: Math.random() < 0.34
+          });
+        }
+
+        const streamCount = landscape ? 820 : 470;
         for (let index = 0; index < streamCount; index += 1) {
-          const t = rand(0.02, Math.PI * 1.98);
-          const overshoot = Math.random() < 0.38 ? rand(1.04, 1.38) : rand(0.82, 1.04);
+          let t = rand(0.02, Math.PI * 1.98);
+          if (Math.abs(t - Math.PI) < 0.36 && Math.random() < 0.86) {
+            t += (t < Math.PI ? -1 : 1) * rand(0.36, 0.84);
+          }
+          const overshoot = Math.random() < 0.56 ? rand(1.1, 1.52) : rand(0.84, 1.08);
           const end = heartPoint(t, overshoot, rand(-4, 10));
           const side = end.x - layout.baseX;
           const arc = rand(-1, 1);
+          const launchX = layout.baseX + side * rand(0.08, 0.38) + rand(-width * 0.08, width * 0.08);
 
           streams.push({
-            sx: layout.baseX + rand(-20, 20),
-            sy: layout.baseY + rand(-5, 7),
-            c1x: layout.baseX + side * rand(0.08, 0.32) + arc * rand(18, 72),
+            sx: launchX,
+            sy: layout.baseY + rand(-7, 9),
+            c1x: launchX + side * rand(0.08, 0.24) + arc * rand(18, 72),
             c1y: layout.baseY - height * rand(0.1, 0.24),
             c2x: end.x - side * rand(0.08, 0.24) + arc * rand(18, 82),
             c2y: end.y + height * rand(0.05, 0.18),
             ex: end.x + rand(-10, 10),
             ey: end.y + rand(-10, 10),
-            width: rand(0.28, 0.9),
-            alpha: rand(0.026, 0.09),
+            width: rand(0.22, 0.68),
+            alpha: rand(0.018, 0.068),
             phase: rand(0, 1),
             speed: rand(0.08, 0.18),
-            delay: rand(0, 0.62)
+            delay: rand(0, 0.62),
+            beads: Array.from({ length: landscape ? 11 : 7 }, () => ({
+              t: rand(0.14, 0.98),
+              r: rand(0.18, 0.78),
+              alpha: rand(0.06, 0.26),
+              phase: rand(0, Math.PI * 2)
+            }))
           });
         }
 
-        const waveCount = landscape ? 24 : 14;
+        const waveCount = landscape ? 58 : 34;
         for (let index = 0; index < waveCount; index += 1) {
           waveLines.push({
             y: layout.baseY + rand(-height * 0.08, height * 0.08),
@@ -291,12 +326,12 @@
             freq: rand(0.006, 0.018),
             phase: rand(0, Math.PI * 2),
             speed: rand(0.00035, 0.0009),
-            alpha: rand(0.035, 0.12),
-            width: rand(0.32, 1.0)
+            alpha: rand(0.028, 0.105),
+            width: rand(0.24, 0.82)
           });
         }
 
-        const moteCount = landscape ? 520 : 260;
+        const moteCount = landscape ? 3600 : 1900;
         for (let index = 0; index < moteCount; index += 1) {
           baseMotes.push({
             x: rand(0, width),
@@ -304,6 +339,27 @@
             r: rand(0.35, 1.6),
             alpha: rand(0.05, 0.3),
             phase: rand(0, Math.PI * 2)
+          });
+        }
+
+        const groundCount = landscape ? 9200 : 4800;
+        for (let index = 0; index < groundCount; index += 1) {
+          const side = Math.random() < 0.5 ? -1 : 1;
+          const distance = Math.pow(Math.random(), 0.68) * width * (landscape ? 0.58 : 0.46);
+          const x = layout.baseX + side * distance + rand(-18, 18);
+          const y = layout.baseY + rand(-height * 0.075, height * 0.12);
+          const fade = 1 - Math.min(1, Math.abs(x - layout.baseX) / (width * 0.62));
+
+          groundDust.push({
+            sx: layout.baseX + rand(-28, 28),
+            sy: layout.baseY + rand(-8, 10),
+            x,
+            y,
+            r: rand(0.16, Math.random() > 0.9 ? 0.78 : 0.46),
+            alpha: rand(0.04, 0.2) * (0.35 + fade * 0.65),
+            phase: rand(0, Math.PI * 2),
+            delay: rand(0, 0.68),
+            white: Math.random() < 0.26
           });
         }
       }
@@ -324,18 +380,19 @@
         ctx.fillRect(0, 0, width, height);
 
         ctx.save();
-        ctx.globalAlpha = layout.landscape ? 0.26 : 0.12;
-        ctx.font = `${Math.max(10, Math.min(width, height) * 0.032)}px Consolas, monospace`;
-        ctx.fillStyle = "rgba(116, 193, 255, 0.72)";
-        const left = Math.max(18, width * 0.045);
-        const top = Math.max(18, height * 0.08);
-        const lineHeight = Math.max(14, Math.min(width, height) * 0.045);
+        ctx.globalCompositeOperation = "lighter";
+        const starCount = layout.landscape ? 150 : 86;
 
-        for (let index = 0; index < 15; index += 1) {
-          const text = codeLines[index % codeLines.length];
-          ctx.fillStyle = index % 3 === 0 ? "rgba(255, 214, 148, 0.54)" : "rgba(126, 205, 255, 0.52)";
-          ctx.fillText(text, left + (index % 2) * 18, top + index * lineHeight);
+        for (let index = 0; index < starCount; index += 1) {
+          const x = (index * 97) % width;
+          const y = (index * 53) % height;
+          const pulse = 0.32 + Math.sin(time * 0.0014 + index) * 0.18;
+          ctx.fillStyle = `rgba(214, 235, 255, ${pulse * 0.26})`;
+          ctx.beginPath();
+          ctx.arc(x, y, 0.45 + (index % 3) * 0.24, 0, Math.PI * 2);
+          ctx.fill();
         }
+
         ctx.restore();
       }
 
@@ -398,6 +455,19 @@
         ctx.stroke();
       }
 
+      function drawTinyLight(x, y, radius, alpha, white = false) {
+        ctx.fillStyle = white ? `rgba(255, 255, 255, ${alpha})` : `rgba(188, 228, 255, ${alpha})`;
+
+        if (radius < 0.72) {
+          ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+          return;
+        }
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
       function drawStreams(time, elapsed) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
@@ -406,21 +476,68 @@
           const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.5 - stream.delay * 0.58, 0, 1));
           strokeBezierSegment(stream, 0, reveal, stream.alpha, stream.width);
 
+          for (const bead of stream.beads) {
+            if (bead.t > reveal) {
+              continue;
+            }
+
+            const beadPoint = bezierPoint(stream, bead.t);
+            const pulse = 0.58 + Math.sin(time * 0.003 + bead.phase) * 0.3;
+            drawTinyLight(beadPoint.x, beadPoint.y, bead.r, bead.alpha * Math.max(0.2, pulse), true);
+          }
+
           const head = Math.min(reveal, (stream.phase + time * 0.000075 * stream.speed * 60) % 1);
           const from = clamp(head - 0.08, 0, 1);
           const to = clamp(head + 0.018, 0, 1);
           const point = bezierPoint(stream, head);
 
-          strokeBezierSegment(stream, from, to, 0.36, stream.width + 0.72);
+          strokeBezierSegment(stream, from, to, 0.24, stream.width + 0.45);
 
-          const dotGlow = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 8);
-          dotGlow.addColorStop(0, "rgba(255, 255, 255, 0.94)");
-          dotGlow.addColorStop(0.36, "rgba(196, 230, 255, 0.32)");
+          const dotGlow = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 5.5);
+          dotGlow.addColorStop(0, "rgba(255, 255, 255, 0.82)");
+          dotGlow.addColorStop(0.36, "rgba(196, 230, 255, 0.24)");
           dotGlow.addColorStop(1, "rgba(196, 230, 255, 0)");
           ctx.fillStyle = dotGlow;
           ctx.beginPath();
-          ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+          ctx.arc(point.x, point.y, 5.5, 0, Math.PI * 2);
           ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      function drawBloomDust(time, elapsed) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const dot of bloomDust) {
+          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.7 - dot.delay * 0.42, 0, 1));
+          const floatX = Math.sin(time * 0.0012 + dot.phase) * (0.8 + dot.size * 1.2);
+          const floatY = Math.cos(time * 0.001 + dot.phase) * (0.55 + dot.size);
+          const x = dot.sx + (dot.x - dot.sx) * reveal + floatX;
+          const y = dot.sy + (dot.y - dot.sy) * reveal + floatY;
+          const twinkle = 0.6 + Math.sin(time * 0.0034 + dot.phase) * 0.3;
+          const alpha = dot.alpha * reveal * Math.max(0.18, twinkle);
+          const radius = dot.size * (0.72 + reveal * 0.42);
+
+          drawTinyLight(x, y, radius, alpha, dot.white);
+        }
+
+        ctx.restore();
+      }
+
+      function drawGroundDust(time, elapsed) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const dot of groundDust) {
+          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.4 - dot.delay * 0.38, 0, 1));
+          const x = dot.sx + (dot.x - dot.sx) * reveal + Math.sin(time * 0.001 + dot.phase) * 1.8;
+          const y = dot.sy + (dot.y - dot.sy) * reveal + Math.cos(time * 0.0013 + dot.phase) * 0.9;
+          const twinkle = 0.55 + Math.sin(time * 0.0028 + dot.phase) * 0.28;
+          const alpha = dot.alpha * reveal * Math.max(0.16, twinkle);
+
+          drawTinyLight(x, y, dot.r * (0.8 + reveal * 0.36), alpha, dot.white);
         }
 
         ctx.restore();
@@ -439,12 +556,9 @@
           const alpha = dot.alpha * reveal * Math.max(0.18, twinkle);
           const radius = dot.size * (0.78 + reveal * 0.45);
 
-          ctx.fillStyle = dot.white ? `rgba(255, 255, 255, ${alpha})` : `rgba(186, 226, 255, ${alpha})`;
-          ctx.beginPath();
-          ctx.arc(x, y, radius, 0, Math.PI * 2);
-          ctx.fill();
+          drawTinyLight(x, y, radius, alpha, dot.white);
 
-          if (dot.white && radius > 1.05) {
+          if (dot.white && radius > 0.86) {
             ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.18})`;
             ctx.beginPath();
             ctx.arc(x, y, radius * 2.8, 0, Math.PI * 2);
@@ -460,11 +574,11 @@
         ctx.globalCompositeOperation = "lighter";
 
         const pulse = 0.92 + Math.sin(time * 0.003) * 0.08;
-        const radius = Math.min(width, height) * 0.3;
+        const radius = Math.min(width, height) * 0.22;
         const glow = ctx.createRadialGradient(layout.baseX, layout.baseY, 0, layout.baseX, layout.baseY, radius);
-        glow.addColorStop(0, `rgba(255, 255, 255, ${0.78 * pulse})`);
-        glow.addColorStop(0.08, `rgba(204, 232, 255, ${0.34 * pulse})`);
-        glow.addColorStop(0.28, "rgba(114, 190, 255, 0.12)");
+        glow.addColorStop(0, `rgba(255, 255, 255, ${0.36 * pulse})`);
+        glow.addColorStop(0.08, `rgba(204, 232, 255, ${0.2 * pulse})`);
+        glow.addColorStop(0.28, "rgba(114, 190, 255, 0.08)");
         glow.addColorStop(1, "rgba(114, 190, 255, 0)");
         ctx.fillStyle = glow;
         ctx.beginPath();
@@ -473,9 +587,9 @@
 
         const line = ctx.createLinearGradient(0, layout.baseY, width, layout.baseY);
         line.addColorStop(0, "rgba(130, 206, 255, 0)");
-        line.addColorStop(0.34, "rgba(206, 236, 255, 0.42)");
-        line.addColorStop(0.5, "rgba(255, 255, 255, 0.88)");
-        line.addColorStop(0.66, "rgba(206, 236, 255, 0.42)");
+        line.addColorStop(0.28, "rgba(206, 236, 255, 0.36)");
+        line.addColorStop(0.5, "rgba(255, 255, 255, 0.52)");
+        line.addColorStop(0.72, "rgba(206, 236, 255, 0.36)");
         line.addColorStop(1, "rgba(130, 206, 255, 0)");
         ctx.strokeStyle = line;
         ctx.lineWidth = Math.max(1, Math.min(width, height) * 0.006);
@@ -506,6 +620,8 @@
         drawBackground(now);
         drawWaveLines(now);
         drawStreams(now, elapsed);
+        drawGroundDust(now, elapsed);
+        drawBloomDust(now, elapsed);
         drawHeartDots(now, elapsed);
         drawSource(now);
         drawVignette();
