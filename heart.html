@@ -3,14 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>心海流光</title>
-    <meta name="description" content="一颗安静旋转的 3D 粒子爱心。" />
+    <title>心海花开</title>
+    <meta name="description" content="一片横屏盛开的蓝白粒子爱心。" />
     <style>
       :root {
-        --bg: #02060d;
-        --text: #fff8fb;
-        --soft: rgba(255, 248, 251, 0.74);
-        --dim: rgba(255, 248, 251, 0.48);
+        --text: #f8fbff;
+        --soft: rgba(238, 247, 255, 0.72);
+        --dim: rgba(238, 247, 255, 0.48);
       }
 
       * {
@@ -21,7 +20,7 @@
       body {
         min-height: 100%;
         margin: 0;
-        background: var(--bg);
+        background: #02050b;
         color: var(--text);
         font-family:
           "Microsoft YaHei",
@@ -42,652 +41,479 @@
         min-height: 100svh;
         overflow: hidden;
         background:
-          radial-gradient(circle at 50% 48%, rgba(118, 183, 255, 0.13), transparent 36%),
-          radial-gradient(circle at 50% 62%, rgba(255, 245, 252, 0.075), transparent 24%),
-          radial-gradient(circle at 50% 94%, rgba(115, 220, 255, 0.055), transparent 30%),
-          linear-gradient(180deg, #02060d 0%, #060914 54%, #02050b 100%);
+          radial-gradient(circle at 50% 72%, rgba(197, 230, 255, 0.12), transparent 27%),
+          radial-gradient(circle at 50% 38%, rgba(93, 166, 255, 0.12), transparent 44%),
+          linear-gradient(180deg, #02050b 0%, #06101a 54%, #02050b 100%);
       }
 
-      #trailCanvas,
       #heartCanvas {
         position: absolute;
         inset: 0;
         width: 100%;
         height: 100%;
-        pointer-events: none;
-      }
-
-      #trailCanvas {
-        z-index: 1;
-        opacity: 0.96;
-      }
-
-      #heartCanvas {
-        z-index: 2;
-      }
-
-      .stars {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        overflow: hidden;
-        pointer-events: none;
-      }
-
-      .stars span {
-        position: absolute;
-        left: var(--x);
-        top: var(--y);
-        width: var(--s);
-        height: var(--s);
-        border-radius: 999px;
-        background: rgba(255, 248, 251, 0.58);
-        opacity: 0.32;
-        animation: starPulse var(--d) ease-in-out infinite;
-        animation-delay: var(--delay);
-      }
-
-      .top-copy,
-      .bottom-copy {
-        position: absolute;
-        right: max(20px, env(safe-area-inset-right));
-        left: max(20px, env(safe-area-inset-left));
-        z-index: 3;
-        text-align: center;
-        pointer-events: none;
-      }
-
-      .top-copy {
-        top: max(30px, env(safe-area-inset-top));
-      }
-
-      .kicker {
-        margin: 0 0 8px;
-        color: var(--dim);
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(2.3rem, 10vw, 4.4rem);
-        font-weight: 850;
-        line-height: 1;
-        letter-spacing: 0;
-      }
-
-      .bottom-copy {
-        bottom: max(30px, env(safe-area-inset-bottom));
-        display: grid;
-        gap: 10px;
-        justify-items: center;
-      }
-
-      .note {
-        width: min(100%, 18.5rem);
-        margin: 0;
-        color: var(--soft);
-        font-size: clamp(0.95rem, 3.8vw, 1.08rem);
-        line-height: 1.78;
-      }
-
-      .note strong {
-        color: #ffffff;
-        font-weight: 800;
-      }
-
-      .hint {
-        margin: 2px 0 0;
-        color: var(--dim);
-        font-size: 0.78rem;
-        letter-spacing: 0.05em;
       }
 
       .back-link {
         position: absolute;
-        top: max(18px, env(safe-area-inset-top));
+        top: max(16px, env(safe-area-inset-top));
         left: max(18px, env(safe-area-inset-left));
         z-index: 3;
-        color: rgba(255, 248, 251, 0.58);
+        color: rgba(238, 247, 255, 0.7);
         font-size: 0.9rem;
-        line-height: 1;
         text-decoration: none;
-        transition: color 160ms ease;
       }
 
-      .back-link:active,
-      .back-link:hover {
-        color: rgba(255, 248, 251, 0.9);
+      .caption {
+        position: absolute;
+        right: max(24px, env(safe-area-inset-right));
+        bottom: max(20px, env(safe-area-inset-bottom));
+        z-index: 2;
+        max-width: 21rem;
+        text-align: right;
+        pointer-events: none;
       }
 
-      @keyframes starPulse {
-        0%,
-        100% {
-          opacity: 0.14;
-          transform: scale(0.7);
+      .caption p {
+        margin: 0;
+        color: var(--soft);
+        font-size: clamp(0.86rem, 1.7vw, 1.05rem);
+        line-height: 1.7;
+        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72);
+      }
+
+      .caption strong {
+        display: block;
+        margin-top: 6px;
+        color: #ffffff;
+        font-size: clamp(0.92rem, 1.85vw, 1.12rem);
+        font-weight: 800;
+      }
+
+      .rotate-tip {
+        position: absolute;
+        left: 50%;
+        bottom: max(18px, env(safe-area-inset-bottom));
+        z-index: 4;
+        display: none;
+        width: max-content;
+        max-width: calc(100vw - 40px);
+        padding: 8px 12px;
+        border: 1px solid rgba(238, 247, 255, 0.16);
+        border-radius: 999px;
+        background: rgba(2, 5, 11, 0.58);
+        color: rgba(238, 247, 255, 0.72);
+        font-size: 0.78rem;
+        transform: translateX(-50%);
+        backdrop-filter: blur(10px);
+      }
+
+      @media (orientation: portrait) {
+        .caption {
+          right: 20px;
+          left: 20px;
+          bottom: max(54px, env(safe-area-inset-bottom));
+          max-width: none;
+          text-align: center;
         }
 
-        50% {
-          opacity: 0.56;
-          transform: scale(1.1);
+        .caption p {
+          font-size: 0.86rem;
+        }
+
+        .rotate-tip {
+          display: block;
         }
       }
     </style>
   </head>
   <body>
-    <main class="scene" aria-label="心海流光 3D 粒子爱心">
-      <canvas id="trailCanvas"></canvas>
+    <main class="scene" aria-label="横屏蓝白粒子爱心">
       <canvas id="heartCanvas"></canvas>
-      <div class="stars" aria-hidden="true"></div>
       <a class="back-link" href="./index.html">返回</a>
-
-      <section class="top-copy">
-        <p class="kicker">quiet little galaxy</p>
-        <h1>心海流光</h1>
-      </section>
-
-      <section class="bottom-copy">
-        <p class="note">
-          江大美女，给你看一颗<br />
-          安静旋转的星星心。<br />
-          愿今天有一点点温柔，<br />
-          刚好被你撞见。
+      <section class="caption">
+        <p>
+          江大美女，给你看一束光。<br />
+          它会从夜色里慢慢盛开，
+          <strong>像刚好被你撞见的温柔。</strong>
         </p>
-        <p class="note"><strong>不用想太多，漂亮就够了。</strong></p>
-        <p class="hint">它会自己慢慢转</p>
       </section>
+      <div class="rotate-tip">横屏看会更像这束光在眼前展开</div>
     </main>
 
     <script>
-      const trailCanvas = document.querySelector("#trailCanvas");
-      const trailCtx = trailCanvas.getContext("2d", { alpha: true });
       const canvas = document.querySelector("#heartCanvas");
-      const starLayer = document.querySelector(".stars");
-      const gl = canvas.getContext("webgl", {
-        alpha: true,
-        antialias: true,
-        depth: false,
-        premultipliedAlpha: false
-      });
+      const ctx = canvas.getContext("2d", { alpha: false });
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      const vertexSource = `
-        precision mediump float;
-
-        attribute vec3 aTarget;
-        attribute vec3 aStart;
-        attribute vec3 aColor;
-        attribute float aSize;
-        attribute float aPhase;
-
-        uniform vec2 uResolution;
-        uniform float uTime;
-        uniform float uScale;
-        uniform float uCenterY;
-        uniform float uDpr;
-
-        varying vec3 vColor;
-        varying float vAlpha;
-
-        float easeOutCubic(float x) {
-          return 1.0 - pow(1.0 - x, 3.0);
-        }
-
-        void main() {
-          float reveal = easeOutCubic(clamp((uTime - 0.12) / 2.35, 0.0, 1.0));
-          float swirl = (1.0 - reveal) * (1.45 + aPhase * 0.035);
-          float cs = cos(swirl);
-          float sn = sin(swirl);
-          vec3 start = aStart;
-          start.xy = mat2(cs, -sn, sn, cs) * start.xy;
-
-          vec3 target = aTarget * (1.0 + sin(uTime * 1.3 + aPhase) * 0.014);
-          vec3 p = mix(start, target, reveal);
-
-          float yaw = sin(uTime * 0.28) * 0.34;
-          float pitch = -0.14 + sin(uTime * 0.22) * 0.05;
-          float roll = sin(uTime * 0.17) * 0.04;
-
-          float cy = cos(yaw);
-          float sy = sin(yaw);
-          vec3 p1 = vec3(p.x * cy - p.y * sy, p.x * sy + p.y * cy, p.z);
-
-          float cp = cos(pitch);
-          float sp = sin(pitch);
-          vec3 p2 = vec3(p1.x, p1.y * cp - p1.z * sp, p1.y * sp + p1.z * cp);
-
-          float cr = cos(roll);
-          float sr = sin(roll);
-          vec3 rp = vec3(p2.x * cr + p2.z * sr, p2.y, -p2.x * sr + p2.z * cr);
-
-          float perspective = 2.85 / (2.85 - rp.y * 0.56);
-          vec2 center = vec2(uResolution.x * 0.5, uCenterY);
-          vec2 screen = center + vec2(rp.x, -rp.z) * uScale * perspective;
-          vec2 clip = screen / uResolution * 2.0 - 1.0;
-
-          float depth = clamp((rp.y + 1.45) / 2.9, 0.0, 1.0);
-          float twinkle = 0.8 + sin(uTime * 2.4 + aPhase) * 0.2;
-
-          gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
-          gl_PointSize = aSize * (5.4 + depth * 5.1) * perspective * uDpr;
-
-          vColor = aColor;
-          vAlpha = (0.2 + depth * 0.8) * twinkle * reveal;
-        }
-      `;
-
-      const fragmentSource = `
-        precision mediump float;
-
-        varying vec3 vColor;
-        varying float vAlpha;
-
-        void main() {
-          float d = distance(gl_PointCoord, vec2(0.5));
-          float soft = smoothstep(0.5, 0.0, d);
-          float alpha = pow(soft, 1.65) * vAlpha;
-          gl_FragColor = vec4(vColor, alpha);
-        }
-      `;
-
-      let program;
-      let pointCount = 0;
-      let dpr = 1;
       let width = 0;
       let height = 0;
-      let startTime = performance.now();
-      let lightStreams = [];
+      let dpr = 1;
+      let layout = {};
+      let heartDots = [];
+      let streams = [];
       let waveLines = [];
+      let baseMotes = [];
+      let startTime = performance.now();
+
+      const codeLines = [
+        "this.length = 1; // 光",
+        "this.angle += speed;",
+        "this.color = '#bfe8ff';",
+        "heart.init();",
+        "particle.alpha *= 0.98;",
+        "wave.draw(ctx);",
+        "let x = Math.random();",
+        "const love = new Light();"
+      ];
 
       function rand(min, max) {
         return min + Math.random() * (max - min);
       }
 
-      function heartField(x, y, z) {
-        const a = x * x + 2.25 * y * y + z * z - 1;
-        return a * a * a - x * x * z * z * z - 0.1125 * y * y * z * z * z;
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
       }
 
-      function compileShader(type, source) {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-
-        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-          throw new Error(gl.getShaderInfoLog(shader) || "Shader compile failed");
-        }
-
-        return shader;
+      function easeOutCubic(value) {
+        return 1 - Math.pow(1 - value, 3);
       }
 
-      function createProgram() {
-        const vertex = compileShader(gl.VERTEX_SHADER, vertexSource);
-        const fragment = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
-        const nextProgram = gl.createProgram();
-        gl.attachShader(nextProgram, vertex);
-        gl.attachShader(nextProgram, fragment);
-        gl.linkProgram(nextProgram);
+      function heartPoint(t, scale = 1, yOffset = 0) {
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
 
-        if (!gl.getProgramParameter(nextProgram, gl.LINK_STATUS)) {
-          throw new Error(gl.getProgramInfoLog(nextProgram) || "Program link failed");
-        }
-
-        return nextProgram;
+        return {
+          x: layout.cx + x * layout.scaleX * scale,
+          y: layout.cy + y * layout.scaleY * scale + yOffset
+        };
       }
 
-      function createHeartPoints() {
-        const points = [];
-        let attempts = 0;
+      function bezierPoint(curve, t) {
+        const inv = 1 - t;
+        const inv2 = inv * inv;
+        const t2 = t * t;
 
-        while (points.length < 5200 && attempts < 520000) {
-          attempts += 1;
-          const x = rand(-1.42, 1.42);
-          const y = rand(-0.86, 0.86);
-          const z = rand(-1.08, 1.44);
-          const field = heartField(x, y, z);
-
-          if (field > 0) {
-            continue;
-          }
-
-          const delta = 0.042;
-          const surface =
-            heartField(x + delta, y, z) > 0 ||
-            heartField(x - delta, y, z) > 0 ||
-            heartField(x, y + delta, z) > 0 ||
-            heartField(x, y - delta, z) > 0 ||
-            heartField(x, y, z + delta) > 0 ||
-            heartField(x, y, z - delta) > 0;
-
-          if (!surface && Math.random() > 0.04) {
-            continue;
-          }
-
-          points.push({
-            x: x * 1.04,
-            y: y * 1.08,
-            z: z * 1.08,
-            surface
-          });
-        }
-
-        return points;
-      }
-
-      function createStartPoint() {
-        const theta = rand(0, Math.PI * 2);
-        const phi = Math.acos(rand(-1, 1));
-        const radius = rand(2.4, 4.3);
-
-        return [
-          Math.sin(phi) * Math.cos(theta) * radius,
-          Math.sin(phi) * Math.sin(theta) * radius,
-          Math.cos(phi) * radius
-        ];
-      }
-
-      function colorForPoint(point, index) {
-        const glow = point.surface ? 0.86 : 0.68;
-        const blue = 0.78 + Math.random() * 0.18;
-        const white = index % 6 === 0;
-
-        if (white) {
-          return [0.96, 0.99, 1];
-        }
-
-        return [
-          0.58 + glow * 0.28,
-          0.75 + blue * 0.2,
-          1
-        ];
-      }
-
-      function uploadAttribute(name, values, size) {
-        const location = gl.getAttribLocation(program, name);
-        const buffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(values), gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(location);
-        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 0, 0);
-      }
-
-      function initWebGL() {
-        if (!gl) {
-          document.body.classList.add("no-webgl");
-          return;
-        }
-
-        program = createProgram();
-        gl.useProgram(program);
-        const points = createHeartPoints();
-        pointCount = points.length;
-
-        const targets = [];
-        const starts = [];
-        const colors = [];
-        const sizes = [];
-        const phases = [];
-
-        points.forEach((point, index) => {
-          const start = createStartPoint();
-          const color = colorForPoint(point, index);
-          targets.push(point.x, point.y, point.z);
-          starts.push(start[0], start[1], start[2]);
-          colors.push(color[0], color[1], color[2]);
-          sizes.push(rand(point.surface ? 0.76 : 0.44, point.surface ? 1.42 : 0.86));
-          phases.push(rand(0, Math.PI * 2));
-        });
-
-        uploadAttribute("aTarget", targets, 3);
-        uploadAttribute("aStart", starts, 3);
-        uploadAttribute("aColor", colors, 3);
-        uploadAttribute("aSize", sizes, 1);
-        uploadAttribute("aPhase", phases, 1);
-
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
-        gl.disable(gl.DEPTH_TEST);
+        return {
+          x: inv2 * inv * curve.sx + 3 * inv2 * t * curve.c1x + 3 * inv * t2 * curve.c2x + t2 * t * curve.ex,
+          y: inv2 * inv * curve.sy + 3 * inv2 * t * curve.c1y + 3 * inv * t2 * curve.c2y + t2 * t * curve.ey
+        };
       }
 
       function resize() {
         dpr = Math.min(window.devicePixelRatio || 1, 2);
         width = window.innerWidth;
         height = window.innerHeight;
-        trailCanvas.width = Math.floor(width * dpr);
-        trailCanvas.height = Math.floor(height * dpr);
-        trailCanvas.style.width = `${width}px`;
-        trailCanvas.style.height = `${height}px`;
-        trailCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
         canvas.style.width = `${width}px`;
         canvas.style.height = `${height}px`;
-
-        if (gl) {
-          gl.viewport(0, 0, canvas.width, canvas.height);
-        }
-
-        createLightStreams();
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        createScene();
       }
 
-      function heartOutlinePoint(t) {
-        const scale = Math.min(width, height) * (width < 760 ? 0.026 : 0.018);
-        const centerX = width * 0.5;
-        const centerY = height * (width < 760 ? 0.38 : 0.42);
-        const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      function createScene() {
+        const landscape = width >= height;
+        const scale = landscape ? Math.min(width / 74, height / 39) : Math.min(width / 38, height / 78);
+        const scaleX = scale * (landscape ? 1.24 : 1);
+        const scaleY = scale * (landscape ? 0.9 : 1);
+        const baseY = landscape ? height * 0.79 : height * 0.47;
 
-        return {
-          x: centerX + x * scale,
-          y: centerY + y * scale
+        layout = {
+          landscape,
+          cx: width * 0.5,
+          baseX: width * 0.5,
+          baseY,
+          scale,
+          scaleX,
+          scaleY,
+          cy: baseY - scaleY * 16.3
         };
-      }
 
-      function cubicPoint(stream, t) {
-        const inv = 1 - t;
-        const inv2 = inv * inv;
-        const t2 = t * t;
-
-        return {
-          x: inv2 * inv * stream.sx + 3 * inv2 * t * stream.c1x + 3 * inv * t2 * stream.c2x + t2 * t * stream.ex,
-          y: inv2 * inv * stream.sy + 3 * inv2 * t * stream.c1y + 3 * inv * t2 * stream.c2y + t2 * t * stream.ey
-        };
-      }
-
-      function strokeCubicSegment(stream, from, to, alpha, widthValue) {
-        const steps = 12;
-        trailCtx.beginPath();
-
-        for (let index = 0; index <= steps; index += 1) {
-          const t = from + (to - from) * (index / steps);
-          const point = cubicPoint(stream, t);
-
-          if (index === 0) {
-            trailCtx.moveTo(point.x, point.y);
-          } else {
-            trailCtx.lineTo(point.x, point.y);
-          }
-        }
-
-        trailCtx.strokeStyle = `rgba(205, 232, 255, ${alpha})`;
-        trailCtx.lineWidth = widthValue;
-        trailCtx.lineCap = "round";
-        trailCtx.stroke();
-      }
-
-      function createLightStreams() {
-        lightStreams = [];
+        heartDots = [];
+        streams = [];
         waveLines = [];
+        baseMotes = [];
 
-        const baseX = width * 0.5;
-        const baseY = height * (width < 760 ? 0.585 : 0.6);
-        const streamCount = width < 760 ? 86 : 128;
+        const dotCount = landscape ? 3600 : 2100;
+        for (let index = 0; index < dotCount; index += 1) {
+          const outline = Math.random() < 0.72;
+          const t = rand(0, Math.PI * 2);
+          const innerScale = outline ? rand(0.965, 1.055) : Math.sqrt(Math.random()) * rand(0.18, 0.9);
+          const point = heartPoint(t, innerScale, rand(-1.8, 1.8));
+          const outwardX = point.x - layout.cx;
+          const outwardY = point.y - layout.cy;
 
-        for (let index = 0; index < streamCount; index += 1) {
-          const t = rand(0.05, Math.PI * 1.92);
-          const end = heartOutlinePoint(t);
-          const sway = rand(-1, 1);
-          const sourceSpread = rand(-16, 16);
-          const lift = height * rand(0.11, 0.24);
-
-          lightStreams.push({
-            sx: baseX + sourceSpread,
-            sy: baseY + rand(-4, 8),
-            c1x: baseX + sourceSpread * 1.4 + sway * rand(30, 88),
-            c1y: baseY - lift,
-            c2x: end.x + sway * rand(28, 76),
-            c2y: end.y + rand(36, 116),
-            ex: end.x + rand(-8, 8),
-            ey: end.y + rand(-8, 8),
-            phase: rand(0, 1),
-            speed: rand(0.12, 0.23),
-            alpha: rand(0.045, 0.12),
-            width: rand(0.45, 1.15),
-            spark: rand(1.2, 2.9)
-          });
-        }
-
-        for (let index = 0; index < 11; index += 1) {
-          waveLines.push({
-            y: baseY + rand(-22, 28),
-            amp: rand(8, 25),
-            length: rand(0.008, 0.018),
+          heartDots.push({
+            sx: layout.baseX + rand(-34, 34),
+            sy: layout.baseY + rand(-8, 8),
+            x: point.x,
+            y: point.y,
+            bloomX: outwardX * rand(0.015, 0.055),
+            bloomY: outwardY * rand(0.01, 0.04),
+            size: rand(outline ? 0.48 : 0.34, outline ? 1.45 : 0.9),
+            alpha: rand(outline ? 0.32 : 0.12, outline ? 0.82 : 0.42),
             phase: rand(0, Math.PI * 2),
-            speed: rand(0.0004, 0.0009),
-            alpha: rand(0.035, 0.105),
-            width: rand(0.45, 1.05)
+            delay: rand(0, 0.88),
+            white: Math.random() < 0.22
+          });
+        }
+
+        const streamCount = landscape ? 260 : 150;
+        for (let index = 0; index < streamCount; index += 1) {
+          const t = rand(0.02, Math.PI * 1.98);
+          const overshoot = Math.random() < 0.38 ? rand(1.04, 1.38) : rand(0.82, 1.04);
+          const end = heartPoint(t, overshoot, rand(-4, 10));
+          const side = end.x - layout.baseX;
+          const arc = rand(-1, 1);
+
+          streams.push({
+            sx: layout.baseX + rand(-20, 20),
+            sy: layout.baseY + rand(-5, 7),
+            c1x: layout.baseX + side * rand(0.08, 0.32) + arc * rand(18, 72),
+            c1y: layout.baseY - height * rand(0.1, 0.24),
+            c2x: end.x - side * rand(0.08, 0.24) + arc * rand(18, 82),
+            c2y: end.y + height * rand(0.05, 0.18),
+            ex: end.x + rand(-10, 10),
+            ey: end.y + rand(-10, 10),
+            width: rand(0.28, 0.9),
+            alpha: rand(0.026, 0.09),
+            phase: rand(0, 1),
+            speed: rand(0.08, 0.18),
+            delay: rand(0, 0.62)
+          });
+        }
+
+        const waveCount = landscape ? 24 : 14;
+        for (let index = 0; index < waveCount; index += 1) {
+          waveLines.push({
+            y: layout.baseY + rand(-height * 0.08, height * 0.08),
+            amp: rand(height * 0.012, height * 0.05),
+            freq: rand(0.006, 0.018),
+            phase: rand(0, Math.PI * 2),
+            speed: rand(0.00035, 0.0009),
+            alpha: rand(0.035, 0.12),
+            width: rand(0.32, 1.0)
+          });
+        }
+
+        const moteCount = landscape ? 520 : 260;
+        for (let index = 0; index < moteCount; index += 1) {
+          baseMotes.push({
+            x: rand(0, width),
+            y: layout.baseY + rand(-height * 0.05, height * 0.1),
+            r: rand(0.35, 1.6),
+            alpha: rand(0.05, 0.3),
+            phase: rand(0, Math.PI * 2)
           });
         }
       }
 
-      function drawSourceGlow(baseX, baseY, time) {
-        const pulse = 0.92 + Math.sin(time * 0.003) * 0.08;
-        const glow = trailCtx.createRadialGradient(baseX, baseY, 0, baseX, baseY, Math.min(width, height) * 0.32);
-        glow.addColorStop(0, `rgba(255, 255, 255, ${0.42 * pulse})`);
-        glow.addColorStop(0.08, `rgba(202, 232, 255, ${0.2 * pulse})`);
-        glow.addColorStop(0.34, "rgba(120, 196, 255, 0.055)");
-        glow.addColorStop(1, "rgba(120, 196, 255, 0)");
+      function drawBackground(time) {
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, "#02050b");
+        gradient.addColorStop(0.46, "#06101a");
+        gradient.addColorStop(1, "#02050b");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
 
-        trailCtx.fillStyle = glow;
-        trailCtx.beginPath();
-        trailCtx.arc(baseX, baseY, Math.min(width, height) * 0.32, 0, Math.PI * 2);
-        trailCtx.fill();
+        const glow = ctx.createRadialGradient(layout.cx, layout.cy + layout.scale * 6, 0, layout.cx, layout.cy, Math.min(width, height) * 0.58);
+        glow.addColorStop(0, "rgba(104, 179, 255, 0.16)");
+        glow.addColorStop(0.45, "rgba(104, 179, 255, 0.045)");
+        glow.addColorStop(1, "rgba(104, 179, 255, 0)");
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, width, height);
 
-        trailCtx.strokeStyle = `rgba(235, 247, 255, ${0.42 * pulse})`;
-        trailCtx.lineWidth = 1.2;
-        trailCtx.beginPath();
-        trailCtx.moveTo(baseX - Math.min(width, 280) * 0.44, baseY);
-        trailCtx.lineTo(baseX + Math.min(width, 280) * 0.44, baseY);
-        trailCtx.stroke();
+        ctx.save();
+        ctx.globalAlpha = layout.landscape ? 0.26 : 0.12;
+        ctx.font = `${Math.max(10, Math.min(width, height) * 0.032)}px Consolas, monospace`;
+        ctx.fillStyle = "rgba(116, 193, 255, 0.72)";
+        const left = Math.max(18, width * 0.045);
+        const top = Math.max(18, height * 0.08);
+        const lineHeight = Math.max(14, Math.min(width, height) * 0.045);
+
+        for (let index = 0; index < 15; index += 1) {
+          const text = codeLines[index % codeLines.length];
+          ctx.fillStyle = index % 3 === 0 ? "rgba(255, 214, 148, 0.54)" : "rgba(126, 205, 255, 0.52)";
+          ctx.fillText(text, left + (index % 2) * 18, top + index * lineHeight);
+        }
+        ctx.restore();
       }
 
-      function drawWaveLines(time, baseX) {
-        for (const wave of waveLines) {
-          trailCtx.beginPath();
+      function drawWaveLines(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
 
-          for (let x = -40; x <= width + 40; x += 12) {
-            const distance = Math.abs(x - baseX) / width;
-            const fade = Math.max(0.18, 1 - distance * 0.86);
+        for (const wave of waveLines) {
+          ctx.beginPath();
+
+          for (let x = -30; x <= width + 30; x += 8) {
+            const centerFade = 0.35 + 0.65 * Math.exp(-Math.pow((x - layout.cx) / (width * 0.34), 2));
             const y =
               wave.y +
-              Math.sin(x * wave.length + wave.phase + time * wave.speed) * wave.amp * fade +
-              Math.sin(x * wave.length * 0.42 - time * wave.speed * 1.7) * wave.amp * 0.32;
+              Math.sin(x * wave.freq + wave.phase + time * wave.speed) * wave.amp * centerFade +
+              Math.sin(x * wave.freq * 0.42 - time * wave.speed * 1.9) * wave.amp * 0.38;
 
-            if (x === -40) {
-              trailCtx.moveTo(x, y);
+            if (x === -30) {
+              ctx.moveTo(x, y);
             } else {
-              trailCtx.lineTo(x, y);
+              ctx.lineTo(x, y);
             }
           }
 
-          trailCtx.strokeStyle = `rgba(179, 220, 255, ${wave.alpha})`;
-          trailCtx.lineWidth = wave.width;
-          trailCtx.lineCap = "round";
-          trailCtx.stroke();
+          ctx.strokeStyle = `rgba(181, 221, 255, ${wave.alpha})`;
+          ctx.lineWidth = wave.width;
+          ctx.lineCap = "round";
+          ctx.stroke();
         }
+
+        for (const mote of baseMotes) {
+          const twinkle = 0.55 + Math.sin(time * 0.002 + mote.phase) * 0.35;
+          ctx.fillStyle = `rgba(224, 242, 255, ${mote.alpha * twinkle})`;
+          ctx.beginPath();
+          ctx.arc(mote.x, mote.y + Math.sin(time * 0.001 + mote.phase) * 2, mote.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
       }
 
-      function drawLightStreams(time) {
-        const baseX = width * 0.5;
-        const baseY = height * (width < 760 ? 0.585 : 0.6);
-        trailCtx.clearRect(0, 0, width, height);
-        trailCtx.save();
-        trailCtx.globalCompositeOperation = "lighter";
+      function strokeBezierSegment(curve, from, to, alpha, widthValue) {
+        const steps = 18;
+        ctx.beginPath();
 
-        drawSourceGlow(baseX, baseY, time);
-        drawWaveLines(time, baseX);
+        for (let index = 0; index <= steps; index += 1) {
+          const t = from + (to - from) * (index / steps);
+          const point = bezierPoint(curve, t);
 
-        for (const stream of lightStreams) {
-          trailCtx.beginPath();
-          trailCtx.moveTo(stream.sx, stream.sy);
-          trailCtx.bezierCurveTo(stream.c1x, stream.c1y, stream.c2x, stream.c2y, stream.ex, stream.ey);
-          trailCtx.strokeStyle = `rgba(163, 209, 255, ${stream.alpha})`;
-          trailCtx.lineWidth = stream.width;
-          trailCtx.lineCap = "round";
-          trailCtx.stroke();
-
-          if (!prefersReducedMotion) {
-            const progress = (stream.phase + time * 0.00008 * stream.speed * 60) % 1;
-            const from = Math.max(0, progress - 0.08);
-            const to = Math.min(1, progress + 0.02);
-            const point = cubicPoint(stream, progress);
-            const dot = trailCtx.createRadialGradient(point.x, point.y, 0, point.x, point.y, stream.spark * 5);
-
-            strokeCubicSegment(stream, from, to, 0.42, stream.width + 0.9);
-            dot.addColorStop(0, "rgba(255, 255, 255, 0.95)");
-            dot.addColorStop(0.32, "rgba(190, 226, 255, 0.38)");
-            dot.addColorStop(1, "rgba(190, 226, 255, 0)");
-            trailCtx.fillStyle = dot;
-            trailCtx.beginPath();
-            trailCtx.arc(point.x, point.y, stream.spark * 5, 0, Math.PI * 2);
-            trailCtx.fill();
+          if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+          } else {
+            ctx.lineTo(point.x, point.y);
           }
         }
 
-        trailCtx.restore();
+        ctx.strokeStyle = `rgba(188, 228, 255, ${alpha})`;
+        ctx.lineWidth = widthValue;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+
+      function drawStreams(time, elapsed) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const stream of streams) {
+          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.5 - stream.delay * 0.58, 0, 1));
+          strokeBezierSegment(stream, 0, reveal, stream.alpha, stream.width);
+
+          const head = Math.min(reveal, (stream.phase + time * 0.000075 * stream.speed * 60) % 1);
+          const from = clamp(head - 0.08, 0, 1);
+          const to = clamp(head + 0.018, 0, 1);
+          const point = bezierPoint(stream, head);
+
+          strokeBezierSegment(stream, from, to, 0.36, stream.width + 0.72);
+
+          const dotGlow = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 8);
+          dotGlow.addColorStop(0, "rgba(255, 255, 255, 0.94)");
+          dotGlow.addColorStop(0.36, "rgba(196, 230, 255, 0.32)");
+          dotGlow.addColorStop(1, "rgba(196, 230, 255, 0)");
+          ctx.fillStyle = dotGlow;
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        ctx.restore();
+      }
+
+      function drawHeartDots(time, elapsed) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const dot of heartDots) {
+          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.35 - dot.delay * 0.52, 0, 1));
+          const drift = Math.sin(time * 0.0014 + dot.phase) * 0.55;
+          const x = dot.sx + (dot.x + dot.bloomX * drift - dot.sx) * reveal;
+          const y = dot.sy + (dot.y + dot.bloomY * drift - dot.sy) * reveal;
+          const twinkle = 0.68 + Math.sin(time * 0.003 + dot.phase) * 0.28;
+          const alpha = dot.alpha * reveal * Math.max(0.18, twinkle);
+          const radius = dot.size * (0.78 + reveal * 0.45);
+
+          ctx.fillStyle = dot.white ? `rgba(255, 255, 255, ${alpha})` : `rgba(186, 226, 255, ${alpha})`;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fill();
+
+          if (dot.white && radius > 1.05) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.18})`;
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 2.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.restore();
+      }
+
+      function drawSource(time) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        const pulse = 0.92 + Math.sin(time * 0.003) * 0.08;
+        const radius = Math.min(width, height) * 0.3;
+        const glow = ctx.createRadialGradient(layout.baseX, layout.baseY, 0, layout.baseX, layout.baseY, radius);
+        glow.addColorStop(0, `rgba(255, 255, 255, ${0.78 * pulse})`);
+        glow.addColorStop(0.08, `rgba(204, 232, 255, ${0.34 * pulse})`);
+        glow.addColorStop(0.28, "rgba(114, 190, 255, 0.12)");
+        glow.addColorStop(1, "rgba(114, 190, 255, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(layout.baseX, layout.baseY, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        const line = ctx.createLinearGradient(0, layout.baseY, width, layout.baseY);
+        line.addColorStop(0, "rgba(130, 206, 255, 0)");
+        line.addColorStop(0.34, "rgba(206, 236, 255, 0.42)");
+        line.addColorStop(0.5, "rgba(255, 255, 255, 0.88)");
+        line.addColorStop(0.66, "rgba(206, 236, 255, 0.42)");
+        line.addColorStop(1, "rgba(130, 206, 255, 0)");
+        ctx.strokeStyle = line;
+        ctx.lineWidth = Math.max(1, Math.min(width, height) * 0.006);
+        ctx.beginPath();
+        ctx.moveTo(0, layout.baseY);
+        ctx.lineTo(width, layout.baseY);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawVignette() {
+        const left = ctx.createLinearGradient(0, 0, width * 0.18, 0);
+        left.addColorStop(0, "rgba(0, 0, 0, 0.62)");
+        left.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = left;
+        ctx.fillRect(0, 0, width * 0.18, height);
+
+        const right = ctx.createLinearGradient(width, 0, width * 0.82, 0);
+        right.addColorStop(0, "rgba(0, 0, 0, 0.62)");
+        right.addColorStop(1, "rgba(0, 0, 0, 0)");
+        ctx.fillStyle = right;
+        ctx.fillRect(width * 0.82, 0, width * 0.18, height);
       }
 
       function animate(now) {
-        const seconds = prefersReducedMotion ? 5 : (now - startTime) / 1000;
-        drawLightStreams(now);
-
-        if (gl) {
-          gl.clearColor(0, 0, 0, 0);
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.useProgram(program);
-          gl.uniform2f(gl.getUniformLocation(program, "uResolution"), width, height);
-          gl.uniform1f(gl.getUniformLocation(program, "uTime"), seconds);
-          gl.uniform1f(gl.getUniformLocation(program, "uScale"), Math.min(width, height) * (width < 760 ? 0.395 : 0.36));
-          gl.uniform1f(gl.getUniformLocation(program, "uCenterY"), height * (width < 760 ? 0.43 : 0.46));
-          gl.uniform1f(gl.getUniformLocation(program, "uDpr"), dpr);
-          gl.drawArrays(gl.POINTS, 0, pointCount);
-        }
-
+        const elapsed = prefersReducedMotion ? 4 : (now - startTime) / 1000;
+        drawBackground(now);
+        drawWaveLines(now);
+        drawStreams(now, elapsed);
+        drawHeartDots(now, elapsed);
+        drawSource(now);
+        drawVignette();
         requestAnimationFrame(animate);
       }
 
-      function createStars() {
-        for (let index = 0; index < 38; index += 1) {
-          const star = document.createElement("span");
-          star.style.setProperty("--x", `${(index * 47) % 100}%`);
-          star.style.setProperty("--y", `${(index * 71) % 100}%`);
-          star.style.setProperty("--s", `${1 + (index % 3) * 0.7}px`);
-          star.style.setProperty("--d", `${4.5 + (index % 5) * 0.6}s`);
-          star.style.setProperty("--delay", `${(index % 8) * -0.35}s`);
-          starLayer.appendChild(star);
-        }
-      }
-
-      createStars();
       resize();
       window.addEventListener("resize", resize);
-
-      if (gl) {
-        initWebGL();
-      }
-
       requestAnimationFrame(animate);
     </script>
   </body>
