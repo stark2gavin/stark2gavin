@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>把一整颗心，都送给你</title>
+    <meta name="description" content="一个会跳动的爱心动画和一段认真写给你的告白。" />
+    <style>
+      :root {
+        --background: #130718;
+        --foreground: #fff8fb;
+        --rose: #ff4f8b;
+        --gold: #ffd166;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family:
+          "Microsoft YaHei",
+          "PingFang SC",
+          "Hiragino Sans GB",
+          "Noto Sans CJK SC",
+          Arial,
+          sans-serif;
+      }
+
+      body {
+        overflow-x: hidden;
+      }
+
+      .love-page {
+        position: relative;
+        display: grid;
+        min-height: 100vh;
+        min-height: 100svh;
+        place-items: center;
+        overflow: hidden;
+        padding: clamp(18px, 3.5vh, 36px) clamp(18px, 5vw, 64px);
+        isolation: isolate;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(99, 210, 255, 0.22), transparent 28%),
+          radial-gradient(circle at 86% 12%, rgba(255, 209, 102, 0.19), transparent 24%),
+          radial-gradient(circle at 48% 56%, rgba(255, 79, 139, 0.24), transparent 34%),
+          linear-gradient(145deg, #120616 0%, #24102c 47%, #0f1028 100%);
+      }
+
+      .love-page::before,
+      .love-page::after {
+        position: absolute;
+        z-index: -1;
+        border-radius: 999px;
+        content: "";
+        filter: blur(16px);
+      }
+
+      .love-page::before {
+        width: min(62vw, 580px);
+        height: min(62vw, 580px);
+        background: radial-gradient(circle, rgba(240, 24, 97, 0.22), transparent 67%);
+        inset: 8% auto auto -18%;
+      }
+
+      .love-page::after {
+        right: -15%;
+        bottom: -18%;
+        width: min(58vw, 540px);
+        height: min(58vw, 540px);
+        background: radial-gradient(circle, rgba(99, 210, 255, 0.18), transparent 65%);
+      }
+
+      .star-layer {
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+        pointer-events: none;
+      }
+
+      .star {
+        position: absolute;
+        left: var(--left);
+        top: var(--top);
+        width: var(--size);
+        height: var(--size);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.86);
+        box-shadow: 0 0 14px rgba(255, 255, 255, 0.75);
+        opacity: 0.28;
+        animation: twinkle var(--duration) ease-in-out infinite;
+        animation-delay: var(--delay);
+      }
+
+      .love-stage {
+        display: flex;
+        width: min(760px, 100%);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: clamp(8px, 1.8vw, 16px);
+      }
+
+      .heart-wrap {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        width: 100%;
+        min-height: clamp(210px, 32vh, 280px);
+        place-items: center;
+      }
+
+      .heart-svg {
+        width: min(76vw, 310px);
+        height: auto;
+        overflow: visible;
+        animation: floatHeart 4.8s ease-in-out infinite;
+        filter: drop-shadow(0 30px 46px rgba(0, 0, 0, 0.33));
+      }
+
+      .heart-shadow {
+        fill: rgba(64, 0, 31, 0.42);
+        transform: translateY(24px) scale(0.94);
+        transform-origin: 200px 190px;
+        filter: blur(14px);
+      }
+
+      .heart-core {
+        transform-origin: 200px 185px;
+        animation: heartbeat 1.55s ease-in-out infinite;
+      }
+
+      .heart-particle {
+        fill: #fff8fb;
+        mix-blend-mode: screen;
+        opacity: 0.88;
+        transform-origin: center;
+        animation: particlePulse 1.9s ease-in-out infinite;
+      }
+
+      .love-copy {
+        position: relative;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: clamp(8px, 1.6vw, 13px);
+        text-align: center;
+        text-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
+      }
+
+      .eyebrow {
+        margin: 0;
+        color: var(--gold);
+        font-size: clamp(0.75rem, 1.7vw, 0.9rem);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        color: #fff8fb;
+        font-size: clamp(2.15rem, 4vw, 3.6rem);
+        font-weight: 800;
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      .message {
+        display: grid;
+        max-width: 620px;
+        gap: 4px;
+        padding-top: clamp(10px, 1.7vw, 14px);
+        border-top: 3px solid rgba(255, 209, 102, 0.74);
+      }
+
+      .message p,
+      .signature {
+        margin: 0;
+        color: rgba(255, 248, 251, 0.84);
+        font-size: clamp(0.94rem, 1.55vw, 1.06rem);
+        line-height: 1.62;
+      }
+
+      .message p:last-child {
+        color: #ffffff;
+        font-size: clamp(1.18rem, 2.2vw, 1.55rem);
+        font-weight: 800;
+      }
+
+      .signature {
+        color: rgba(255, 209, 102, 0.9);
+        font-weight: 700;
+      }
+
+      .tap-heart {
+        position: fixed;
+        z-index: 10;
+        color: #ff75a5;
+        font-size: 26px;
+        line-height: 1;
+        pointer-events: none;
+        text-shadow: 0 0 18px rgba(255, 117, 165, 0.8);
+        transform: translate(-50%, -50%);
+        animation: tapHeart 1.2s ease-out forwards;
+      }
+
+      @keyframes heartbeat {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+
+        18% {
+          transform: scale(1.075);
+        }
+
+        36% {
+          transform: scale(0.985);
+        }
+
+        52% {
+          transform: scale(1.045);
+        }
+      }
+
+      @keyframes floatHeart {
+        0%,
+        100% {
+          transform: translateY(0) rotate(-1deg);
+        }
+
+        50% {
+          transform: translateY(-18px) rotate(1.2deg);
+        }
+      }
+
+      @keyframes particlePulse {
+        0%,
+        100% {
+          opacity: 0.52;
+          transform: scale(0.72);
+        }
+
+        45% {
+          opacity: 1;
+          transform: scale(1.45);
+        }
+      }
+
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.18;
+          transform: scale(0.65);
+        }
+
+        50% {
+          opacity: 0.95;
+          transform: scale(1.16);
+        }
+      }
+
+      @keyframes tapHeart {
+        0% {
+          opacity: 0;
+          transform: translate(-50%, -50%) scale(0.55);
+        }
+
+        18% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+          transform: translate(calc(-50% + var(--drift)), -150px) scale(1.45);
+        }
+      }
+
+      @media (max-width: 780px) {
+        .love-page {
+          padding-block: 22px 32px;
+        }
+
+        .heart-wrap {
+          min-height: min(36svh, 260px);
+        }
+
+        .heart-svg {
+          width: min(88vw, 286px);
+        }
+
+        .message {
+          max-width: 34em;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="love-page" aria-label="爱心表白动画">
+      <div class="star-layer" aria-hidden="true"></div>
+      <section class="love-stage">
+        <div class="heart-wrap" aria-hidden="true">
+          <svg class="heart-svg" viewBox="0 0 400 360" role="img" aria-label="跳动的爱心">
+            <defs>
+              <radialGradient id="heartGlow" cx="50%" cy="42%" r="58%">
+                <stop offset="0%" stop-color="#fff1f6" />
+                <stop offset="34%" stop-color="#ff7aa8" />
+                <stop offset="72%" stop-color="#f01861" />
+                <stop offset="100%" stop-color="#990c39" />
+              </radialGradient>
+              <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="8" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <path
+              class="heart-shadow"
+              d="M200 315C127 256 69 203 69 135C69 86 103 54 148 54C174 54 192 67 200 86C208 67 226 54 252 54C297 54 331 86 331 135C331 203 273 256 200 315Z"
+            ></path>
+            <path
+              class="heart-core"
+              d="M200 315C127 256 69 203 69 135C69 86 103 54 148 54C174 54 192 67 200 86C208 67 226 54 252 54C297 54 331 86 331 135C331 203 273 256 200 315Z"
+              fill="url(#heartGlow)"
+              filter="url(#softGlow)"
+            ></path>
+          </svg>
+        </div>
+
+        <div class="love-copy">
+          <p class="eyebrow">To the one I keep thinking about</p>
+          <h1>
+            把一整颗心
+            <br />
+            都送给你
+          </h1>
+          <div class="message" aria-label="表白文字">
+            <p>有些喜欢，不想只藏在聊天框里。</p>
+            <p>所以我把它做成了一颗会跳动的心。</p>
+            <p>想认真告诉你：遇见你之后，每一天都更亮了一点。</p>
+            <p>我喜欢你。</p>
+          </div>
+          <p class="signature">愿余下的日子，我们都可以靠近一点。</p>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const starLayer = document.querySelector(".star-layer");
+      const heartSvg = document.querySelector(".heart-svg");
+
+      for (let index = 0; index < 54; index += 1) {
+        const star = document.createElement("span");
+        star.className = "star";
+        star.style.setProperty("--left", `${(index * 37) % 101}%`);
+        star.style.setProperty("--top", `${(index * 61) % 96}%`);
+        star.style.setProperty("--size", `${2 + (index % 4)}px`);
+        star.style.setProperty("--delay", `${(index % 9) * 0.35}s`);
+        star.style.setProperty("--duration", `${3.8 + (index % 5) * 0.55}s`);
+        starLayer.appendChild(star);
+      }
+
+      for (let index = 0; index < 112; index += 1) {
+        const t = (Math.PI * 2 * index) / 112;
+        const x = 200 + 10.2 * 16 * Math.sin(t) ** 3;
+        const y =
+          176 -
+          9.4 *
+            (13 * Math.cos(t) -
+              5 * Math.cos(2 * t) -
+              2 * Math.cos(3 * t) -
+              Math.cos(4 * t));
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("class", "heart-particle");
+        circle.setAttribute("cx", x.toFixed(2));
+        circle.setAttribute("cy", y.toFixed(2));
+        circle.setAttribute("r", (2.4 + (index % 5) * 0.42).toFixed(2));
+        circle.style.animationDelay = `${(index % 28) * 0.035}s`;
+        heartSvg.appendChild(circle);
+      }
+
+      window.addEventListener("pointerdown", (event) => {
+        const heart = document.createElement("span");
+        heart.className = "tap-heart";
+        heart.textContent = "♥";
+        heart.style.left = `${event.clientX}px`;
+        heart.style.top = `${event.clientY}px`;
+        heart.style.setProperty("--drift", `${Math.random() * 70 - 35}px`);
+        document.body.appendChild(heart);
+        window.setTimeout(() => heart.remove(), 1200);
+      });
+    </script>
+  </body>
+</html>
