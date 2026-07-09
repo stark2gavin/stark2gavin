@@ -4,15 +4,13 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>心海流光</title>
-    <meta name="description" content="一颗简洁、安静旋转的 3D 粒子爱心。" />
+    <meta name="description" content="一颗安静旋转的 3D 粒子爱心。" />
     <style>
       :root {
-        --bg: #05070d;
+        --bg: #04050a;
         --text: #fff8fb;
         --soft: rgba(255, 248, 251, 0.74);
-        --dim: rgba(255, 248, 251, 0.5);
-        --pink: #ff6f9f;
-        --pink-soft: #ffd2df;
+        --dim: rgba(255, 248, 251, 0.48);
       }
 
       * {
@@ -44,9 +42,9 @@
         min-height: 100svh;
         overflow: hidden;
         background:
-          radial-gradient(circle at 50% 43%, rgba(255, 111, 159, 0.13), transparent 33%),
-          radial-gradient(circle at 50% 92%, rgba(255, 210, 223, 0.06), transparent 34%),
-          linear-gradient(180deg, #05070d 0%, #080b14 58%, #05070d 100%);
+          radial-gradient(circle at 50% 42%, rgba(255, 116, 154, 0.16), transparent 35%),
+          radial-gradient(circle at 50% 94%, rgba(255, 214, 225, 0.045), transparent 30%),
+          linear-gradient(180deg, #04050a 0%, #09080f 56%, #04050a 100%);
       }
 
       #heartCanvas {
@@ -54,7 +52,26 @@
         inset: 0;
         width: 100%;
         height: 100%;
+      }
+
+      .stars {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
         pointer-events: none;
+      }
+
+      .stars span {
+        position: absolute;
+        left: var(--x);
+        top: var(--y);
+        width: var(--s);
+        height: var(--s);
+        border-radius: 999px;
+        background: rgba(255, 248, 251, 0.58);
+        opacity: 0.32;
+        animation: starPulse var(--d) ease-in-out infinite;
+        animation-delay: var(--delay);
       }
 
       .top-copy,
@@ -68,7 +85,7 @@
       }
 
       .top-copy {
-        top: max(28px, env(safe-area-inset-top));
+        top: max(30px, env(safe-area-inset-top));
       }
 
       .kicker {
@@ -82,7 +99,7 @@
 
       h1 {
         margin: 0;
-        font-size: clamp(2.35rem, 11vw, 4.4rem);
+        font-size: clamp(2.3rem, 10vw, 4.4rem);
         font-weight: 850;
         line-height: 1;
         letter-spacing: 0;
@@ -131,11 +148,25 @@
       .back-link:hover {
         color: rgba(255, 248, 251, 0.9);
       }
+
+      @keyframes starPulse {
+        0%,
+        100% {
+          opacity: 0.14;
+          transform: scale(0.7);
+        }
+
+        50% {
+          opacity: 0.56;
+          transform: scale(1.1);
+        }
+      }
     </style>
   </head>
   <body>
     <main class="scene" aria-label="心海流光 3D 粒子爱心">
       <canvas id="heartCanvas"></canvas>
+      <div class="stars" aria-hidden="true"></div>
       <a class="back-link" href="./index.html">返回</a>
 
       <section class="top-copy">
@@ -157,22 +188,100 @@
 
     <script>
       const canvas = document.querySelector("#heartCanvas");
-      const ctx = canvas.getContext("2d", { alpha: true });
+      const starLayer = document.querySelector(".stars");
+      const gl = canvas.getContext("webgl", {
+        alpha: true,
+        antialias: true,
+        depth: false,
+        premultipliedAlpha: false
+      });
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+      const vertexSource = `
+        precision mediump float;
+
+        attribute vec3 aTarget;
+        attribute vec3 aStart;
+        attribute vec3 aColor;
+        attribute float aSize;
+        attribute float aPhase;
+
+        uniform vec2 uResolution;
+        uniform float uTime;
+        uniform float uScale;
+        uniform float uCenterY;
+        uniform float uDpr;
+
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        float easeOutCubic(float x) {
+          return 1.0 - pow(1.0 - x, 3.0);
+        }
+
+        void main() {
+          float reveal = easeOutCubic(clamp((uTime - 0.12) / 2.35, 0.0, 1.0));
+          float swirl = (1.0 - reveal) * (1.45 + aPhase * 0.035);
+          float cs = cos(swirl);
+          float sn = sin(swirl);
+          vec3 start = aStart;
+          start.xy = mat2(cs, -sn, sn, cs) * start.xy;
+
+          vec3 target = aTarget * (1.0 + sin(uTime * 1.3 + aPhase) * 0.014);
+          vec3 p = mix(start, target, reveal);
+
+          float yaw = sin(uTime * 0.28) * 0.34;
+          float pitch = -0.14 + sin(uTime * 0.22) * 0.05;
+          float roll = sin(uTime * 0.17) * 0.04;
+
+          float cy = cos(yaw);
+          float sy = sin(yaw);
+          vec3 p1 = vec3(p.x * cy - p.y * sy, p.x * sy + p.y * cy, p.z);
+
+          float cp = cos(pitch);
+          float sp = sin(pitch);
+          vec3 p2 = vec3(p1.x, p1.y * cp - p1.z * sp, p1.y * sp + p1.z * cp);
+
+          float cr = cos(roll);
+          float sr = sin(roll);
+          vec3 rp = vec3(p2.x * cr + p2.z * sr, p2.y, -p2.x * sr + p2.z * cr);
+
+          float perspective = 2.85 / (2.85 - rp.y * 0.56);
+          vec2 center = vec2(uResolution.x * 0.5, uCenterY);
+          vec2 screen = center + vec2(rp.x, -rp.z) * uScale * perspective;
+          vec2 clip = screen / uResolution * 2.0 - 1.0;
+
+          float depth = clamp((rp.y + 1.45) / 2.9, 0.0, 1.0);
+          float twinkle = 0.8 + sin(uTime * 2.4 + aPhase) * 0.2;
+
+          gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
+          gl_PointSize = aSize * (5.4 + depth * 5.1) * perspective * uDpr;
+
+          vColor = aColor;
+          vAlpha = (0.2 + depth * 0.8) * twinkle * reveal;
+        }
+      `;
+
+      const fragmentSource = `
+        precision mediump float;
+
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          float d = distance(gl_PointCoord, vec2(0.5));
+          float soft = smoothstep(0.5, 0.0, d);
+          float alpha = pow(soft, 1.65) * vAlpha;
+          gl_FragColor = vec4(vColor, alpha);
+        }
+      `;
+
+      let program;
+      let pointCount = 0;
+      let dpr = 1;
       let width = 0;
       let height = 0;
-      let dpr = 1;
-      let scale = 1;
-      let centerX = 0;
-      let centerY = 0;
-      let lastTime = performance.now();
-
-      const heartPoints = [];
-      const projected = [];
-      const dust = [];
-      const colors = ["#fff8fb", "#ffd2df", "#ff8caf", "#f6becd"];
-      const sprites = new Map();
+      let startTime = performance.now();
 
       function rand(min, max) {
         return min + Math.random() * (max - min);
@@ -183,83 +292,145 @@
         return a * a * a - x * x * z * z * z - 0.1125 * y * y * z * z * z;
       }
 
-      function makeSprite(color) {
-        const size = 42;
-        const sprite = document.createElement("canvas");
-        const sctx = sprite.getContext("2d");
-        sprite.width = size;
-        sprite.height = size;
-        const gradient = sctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-        gradient.addColorStop(0, color);
-        gradient.addColorStop(0.22, color);
-        gradient.addColorStop(0.58, hexToRgba(color, 0.2));
-        gradient.addColorStop(1, hexToRgba(color, 0));
-        sctx.fillStyle = gradient;
-        sctx.fillRect(0, 0, size, size);
-        return sprite;
-      }
+      function compileShader(type, source) {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
 
-      function getSprite(color) {
-        if (!sprites.has(color)) {
-          sprites.set(color, makeSprite(color));
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          throw new Error(gl.getShaderInfoLog(shader) || "Shader compile failed");
         }
 
-        return sprites.get(color);
+        return shader;
+      }
+
+      function createProgram() {
+        const vertex = compileShader(gl.VERTEX_SHADER, vertexSource);
+        const fragment = compileShader(gl.FRAGMENT_SHADER, fragmentSource);
+        const nextProgram = gl.createProgram();
+        gl.attachShader(nextProgram, vertex);
+        gl.attachShader(nextProgram, fragment);
+        gl.linkProgram(nextProgram);
+
+        if (!gl.getProgramParameter(nextProgram, gl.LINK_STATUS)) {
+          throw new Error(gl.getProgramInfoLog(nextProgram) || "Program link failed");
+        }
+
+        return nextProgram;
       }
 
       function createHeartPoints() {
-        heartPoints.length = 0;
+        const points = [];
         let attempts = 0;
 
-        while (heartPoints.length < 1450 && attempts < 180000) {
+        while (points.length < 5200 && attempts < 520000) {
           attempts += 1;
-          const x = rand(-1.38, 1.38);
-          const y = rand(-0.82, 0.82);
-          const z = rand(-1.08, 1.42);
-          const f = heartField(x, y, z);
+          const x = rand(-1.42, 1.42);
+          const y = rand(-0.86, 0.86);
+          const z = rand(-1.08, 1.44);
+          const field = heartField(x, y, z);
 
-          if (f > 0) {
+          if (field > 0) {
             continue;
           }
 
-          const d = 0.045;
-          const nearSurface =
-            heartField(x + d, y, z) > 0 ||
-            heartField(x - d, y, z) > 0 ||
-            heartField(x, y + d, z) > 0 ||
-            heartField(x, y - d, z) > 0 ||
-            heartField(x, y, z + d) > 0 ||
-            heartField(x, y, z - d) > 0;
+          const delta = 0.042;
+          const surface =
+            heartField(x + delta, y, z) > 0 ||
+            heartField(x - delta, y, z) > 0 ||
+            heartField(x, y + delta, z) > 0 ||
+            heartField(x, y - delta, z) > 0 ||
+            heartField(x, y, z + delta) > 0 ||
+            heartField(x, y, z - delta) > 0;
 
-          if (!nearSurface && Math.random() > 0.12) {
+          if (!surface && Math.random() > 0.04) {
             continue;
           }
 
-          heartPoints.push({
+          points.push({
             x: x * 1.04,
-            y: y * 1.18,
-            z: z * 1.04,
-            size: rand(0.55, nearSurface ? 1.08 : 0.82),
-            color: colors[heartPoints.length % colors.length],
-            phase: rand(0, Math.PI * 2),
-            surface: nearSurface
+            y: y * 1.08,
+            z: z * 1.08,
+            surface
           });
         }
+
+        return points;
       }
 
-      function createDust() {
-        dust.length = 0;
-        const count = Math.round(Math.min(70, Math.max(38, (width * height) / 12000)));
+      function createStartPoint() {
+        const theta = rand(0, Math.PI * 2);
+        const phi = Math.acos(rand(-1, 1));
+        const radius = rand(2.4, 4.3);
 
-        for (let i = 0; i < count; i += 1) {
-          dust.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            r: rand(0.45, 1.25),
-            phase: rand(0, Math.PI * 2),
-            alpha: rand(0.16, 0.42)
-          });
+        return [
+          Math.sin(phi) * Math.cos(theta) * radius,
+          Math.sin(phi) * Math.sin(theta) * radius,
+          Math.cos(phi) * radius
+        ];
+      }
+
+      function colorForPoint(point, index) {
+        const warm = point.surface ? 0.82 : 0.62;
+        const rose = 0.72 + Math.random() * 0.22;
+        const white = index % 9 === 0;
+
+        if (white) {
+          return [1, 0.95, 0.98];
         }
+
+        return [
+          1,
+          0.43 + warm * 0.28,
+          0.56 + rose * 0.22
+        ];
+      }
+
+      function uploadAttribute(name, values, size) {
+        const location = gl.getAttribLocation(program, name);
+        const buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(values), gl.STATIC_DRAW);
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, size, gl.FLOAT, false, 0, 0);
+      }
+
+      function initWebGL() {
+        if (!gl) {
+          document.body.classList.add("no-webgl");
+          return;
+        }
+
+        program = createProgram();
+        gl.useProgram(program);
+        const points = createHeartPoints();
+        pointCount = points.length;
+
+        const targets = [];
+        const starts = [];
+        const colors = [];
+        const sizes = [];
+        const phases = [];
+
+        points.forEach((point, index) => {
+          const start = createStartPoint();
+          const color = colorForPoint(point, index);
+          targets.push(point.x, point.y, point.z);
+          starts.push(start[0], start[1], start[2]);
+          colors.push(color[0], color[1], color[2]);
+          sizes.push(rand(point.surface ? 0.76 : 0.44, point.surface ? 1.42 : 0.86));
+          phases.push(rand(0, Math.PI * 2));
+        });
+
+        uploadAttribute("aTarget", targets, 3);
+        uploadAttribute("aStart", starts, 3);
+        uploadAttribute("aColor", colors, 3);
+        uploadAttribute("aSize", sizes, 1);
+        uploadAttribute("aPhase", phases, 1);
+
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+        gl.disable(gl.DEPTH_TEST);
       }
 
       function resize() {
@@ -270,112 +441,43 @@
         canvas.height = Math.floor(height * dpr);
         canvas.style.width = `${width}px`;
         canvas.style.height = `${height}px`;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        centerX = width / 2;
-        centerY = height * (width < 760 ? 0.45 : 0.46);
-        scale = Math.min(width, height) * (width < 760 ? 0.178 : 0.215);
-        createDust();
-      }
-
-      function drawBackground(time) {
-        ctx.clearRect(0, 0, width, height);
-
-        const glow = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, Math.min(width, height) * 0.42);
-        glow.addColorStop(0, "rgba(255, 111, 159, 0.11)");
-        glow.addColorStop(0.45, "rgba(255, 111, 159, 0.035)");
-        glow.addColorStop(1, "rgba(255, 111, 159, 0)");
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, Math.min(width, height) * 0.42, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        for (const star of dust) {
-          const alpha = star.alpha + Math.sin(time * 0.0012 + star.phase) * 0.1;
-          ctx.fillStyle = `rgba(255, 248, 251, ${Math.max(0.08, alpha)})`;
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-
-      function drawHeart(time) {
-        const yaw = prefersReducedMotion ? 0.42 : Math.sin(time * 0.00042) * 0.72;
-        const pitch = -0.18 + Math.sin(time * 0.00028) * 0.05;
-        const roll = Math.sin(time * 0.00022) * 0.035;
-        const cy = Math.cos(yaw);
-        const sy = Math.sin(yaw);
-        const cp = Math.cos(pitch);
-        const sp = Math.sin(pitch);
-        const cr = Math.cos(roll);
-        const sr = Math.sin(roll);
-        projected.length = 0;
-
-        for (const point of heartPoints) {
-          let x = point.x;
-          let y = point.y;
-          let z = point.z;
-
-          const x1 = x * cy + y * sy;
-          const y1 = -x * sy + y * cy;
-          const z1 = z;
-          const y2 = y1 * cp - z1 * sp;
-          const z2 = y1 * sp + z1 * cp;
-          const x3 = x1 * cr - z2 * sr;
-          const z3 = x1 * sr + z2 * cr;
-          const perspective = 2.35 / (2.35 - y2 * 0.48);
-          const px = centerX + x3 * scale * perspective;
-          const py = centerY - z3 * scale * perspective;
-          const depth = Math.max(0, Math.min(1, (y2 + 1.15) / 2.3));
-          const twinkle = 0.82 + Math.sin(time * 0.002 + point.phase) * 0.18;
-
-          projected.push({
-            x: px,
-            y: py,
-            depth,
-            z: y2,
-            color: point.color,
-            size: point.size * perspective * (point.surface ? 1.15 : 0.88),
-            alpha: (0.28 + depth * 0.7) * twinkle
-          });
-        }
-
-        projected.sort((a, b) => a.z - b.z);
-
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        for (const point of projected) {
-          const sprite = getSprite(point.color);
-          const size = point.size * (4.6 + point.depth * 2.4);
-          ctx.globalAlpha = Math.min(1, point.alpha);
-          ctx.drawImage(sprite, point.x - size / 2, point.y - size / 2, size, size);
-        }
-        ctx.globalAlpha = 1;
-        ctx.restore();
-      }
-
-      function hexToRgba(hex, alpha) {
-        const value = hex.replace("#", "");
-        const r = parseInt(value.slice(0, 2), 16);
-        const g = parseInt(value.slice(2, 4), 16);
-        const b = parseInt(value.slice(4, 6), 16);
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        gl.viewport(0, 0, canvas.width, canvas.height);
       }
 
       function animate(now) {
-        lastTime = now;
-        drawBackground(now);
-        drawHeart(now);
+        const seconds = prefersReducedMotion ? 5 : (now - startTime) / 1000;
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.useProgram(program);
+        gl.uniform2f(gl.getUniformLocation(program, "uResolution"), width, height);
+        gl.uniform1f(gl.getUniformLocation(program, "uTime"), seconds);
+        gl.uniform1f(gl.getUniformLocation(program, "uScale"), Math.min(width, height) * (width < 760 ? 0.395 : 0.36));
+        gl.uniform1f(gl.getUniformLocation(program, "uCenterY"), height * (width < 760 ? 0.43 : 0.46));
+        gl.uniform1f(gl.getUniformLocation(program, "uDpr"), dpr);
+        gl.drawArrays(gl.POINTS, 0, pointCount);
         requestAnimationFrame(animate);
       }
 
-      window.addEventListener("resize", resize);
+      function createStars() {
+        for (let index = 0; index < 38; index += 1) {
+          const star = document.createElement("span");
+          star.style.setProperty("--x", `${(index * 47) % 100}%`);
+          star.style.setProperty("--y", `${(index * 71) % 100}%`);
+          star.style.setProperty("--s", `${1 + (index % 3) * 0.7}px`);
+          star.style.setProperty("--d", `${4.5 + (index % 5) * 0.6}s`);
+          star.style.setProperty("--delay", `${(index % 8) * -0.35}s`);
+          starLayer.appendChild(star);
+        }
+      }
 
-      createHeartPoints();
-      resize();
-      requestAnimationFrame(animate);
+      createStars();
+
+      if (gl) {
+        initWebGL();
+        resize();
+        window.addEventListener("resize", resize);
+        requestAnimationFrame(animate);
+      }
     </script>
   </body>
 </html>
