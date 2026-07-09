@@ -190,9 +190,11 @@
       <section class="bottom-copy">
         <p class="note">
           江大美女，送你一片会旋转的星海。<br />
-          愿今晚有一点光，刚好落进你眼里；也把一点点好心情，轻轻留给你。
+          愿今晚有一束光，越过屏幕落进你眼里。<br />
+          如果它刚好让你笑一下，<br />
+          这片星海就很值。
         </p>
-        <p class="note"><strong>不用急着回答什么，先看它亮一会儿。</strong></p>
+        <p class="note"><strong>不用想太多，先看它亮一会儿。</strong></p>
         <p class="hint">左右滑动，星星会跟着转</p>
       </section>
     </main>
@@ -208,14 +210,18 @@
       let scale = 1;
       let centerX = 0;
       let centerY = 0;
-      let dragAngle = 0;
+      let yaw = 0;
+      let manualYaw = 0;
+      let dragVelocity = 0;
       let lastX = 0;
       let isDragging = false;
       let lastTime = performance.now();
 
       const particles = [];
+      const projected = [];
       const backgroundStars = [];
-      const sparkleColors = ["#fff8fb", "#ff78ad", "#ffd36a", "#6ee7ff"];
+      const sparkleColors = ["#fff8fb", "#ff74aa", "#ffd36a", "#6ee7ff"];
+      const sprites = new Map();
 
       function heartPoint(t) {
         const x = 16 * Math.sin(t) ** 3;
@@ -231,35 +237,79 @@
         return min + Math.random() * (max - min);
       }
 
+      function makeSprite(color) {
+        const size = 48;
+        const sprite = document.createElement("canvas");
+        const spriteCtx = sprite.getContext("2d");
+        sprite.width = size;
+        sprite.height = size;
+        const gradient = spriteCtx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(0.18, color);
+        gradient.addColorStop(0.42, hexToRgba(color, 0.42));
+        gradient.addColorStop(1, hexToRgba(color, 0));
+        spriteCtx.fillStyle = gradient;
+        spriteCtx.fillRect(0, 0, size, size);
+        return sprite;
+      }
+
+      function getSprite(color) {
+        if (!sprites.has(color)) {
+          sprites.set(color, makeSprite(color));
+        }
+
+        return sprites.get(color);
+      }
+
       function createHeartParticles() {
         particles.length = 0;
 
-        for (let i = 0; i < 760; i += 1) {
+        for (let i = 0; i < 620; i += 1) {
           const t = rand(0, Math.PI * 2);
           const base = heartPoint(t);
-          const fill = 0.18 + Math.sqrt(Math.random()) * 0.82;
+          const fill = 0.2 + Math.sqrt(Math.random()) * 0.8;
+          const depth = 12.5 * Math.sqrt(Math.max(0.08, 1 - fill * 0.72));
+          const side = Math.random() > 0.5 ? 1 : -1;
+
           particles.push({
             x: base.x * fill + rand(-0.18, 0.18),
             y: base.y * fill + rand(-0.18, 0.18),
-            z: rand(-7.5, 7.5) * (0.25 + fill * 0.75),
-            size: rand(0.75, 1.95),
+            z: side * depth * (0.45 + Math.random() * 0.55) + rand(-0.8, 0.8),
+            size: rand(0.48, 1.08),
             color: sparkleColors[i % sparkleColors.length],
             phase: rand(0, Math.PI * 2),
-            glow: rand(0.45, 1)
+            glow: rand(0.5, 0.95),
+            kind: "body"
           });
         }
 
-        for (let i = 0; i < 420; i += 1) {
-          const t = (Math.PI * 2 * i) / 420;
+        for (let i = 0; i < 500; i += 1) {
+          const t = (Math.PI * 2 * i) / 500;
           const base = heartPoint(t);
           particles.push({
             x: base.x + rand(-0.08, 0.08),
             y: base.y + rand(-0.08, 0.08),
-            z: rand(-4, 4),
-            size: rand(1.15, 2.35),
-            color: i % 5 === 0 ? "#6ee7ff" : i % 5 === 1 ? "#ffd36a" : "#fff8fb",
+            z: rand(-5.2, 5.2),
+            size: rand(0.66, 1.36),
+            color: i % 7 === 0 ? "#6ee7ff" : i % 7 === 1 ? "#ffd36a" : "#fff8fb",
             phase: rand(0, Math.PI * 2),
-            glow: rand(0.7, 1.15)
+            glow: rand(0.9, 1.25),
+            kind: "rim"
+          });
+        }
+
+        for (let i = 0; i < 150; i += 1) {
+          const t = rand(0, Math.PI * 2);
+          const radius = rand(18, 24);
+          particles.push({
+            x: Math.cos(t) * radius,
+            y: Math.sin(t) * radius * 0.46 + rand(-2, 2),
+            z: rand(-8, 8),
+            size: rand(0.55, 1.15),
+            color: i % 2 === 0 ? "#6ee7ff" : "#ffd36a",
+            phase: rand(0, Math.PI * 2),
+            glow: rand(0.32, 0.7),
+            kind: "halo"
           });
         }
       }
@@ -291,7 +341,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         centerX = width / 2;
         centerY = height * (width < 760 ? 0.43 : 0.45);
-        scale = Math.min(width, height) * (width < 760 ? 0.029 : 0.033);
+        scale = Math.min(width, height) * (width < 760 ? 0.0188 : 0.026);
         createBackgroundStars();
       }
 
@@ -322,32 +372,52 @@
       }
 
       function drawHeart(time) {
-        const autoAngle = prefersReducedMotion ? 0.2 : Math.sin(time * 0.00055) * 0.72;
-        const angleY = autoAngle + dragAngle;
-        const angleX = -0.1 + Math.sin(time * 0.00032) * 0.08;
+        const autoAngle = prefersReducedMotion ? 0.15 : Math.sin(time * 0.00052) * 0.78;
+        const targetYaw = autoAngle + manualYaw;
+        yaw += (targetYaw - yaw) * (isDragging ? 0.28 : 0.12);
+
+        if (!isDragging) {
+          manualYaw += dragVelocity;
+          dragVelocity *= 0.93;
+        }
+
+        const angleY = yaw;
+        const angleX = -0.18 + Math.sin(time * 0.00032) * 0.1;
         const cosY = Math.cos(angleY);
         const sinY = Math.sin(angleY);
         const cosX = Math.cos(angleX);
         const sinX = Math.sin(angleX);
-        const projected = [];
+        projected.length = 0;
+
+        const halo = ctx.createRadialGradient(centerX, centerY, 12, centerX, centerY, Math.min(width, height) * 0.42);
+        halo.addColorStop(0, "rgba(255, 116, 170, 0.18)");
+        halo.addColorStop(0.32, "rgba(110, 231, 255, 0.08)");
+        halo.addColorStop(1, "rgba(255, 116, 170, 0)");
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, Math.min(width, height) * 0.42, 0, Math.PI * 2);
+        ctx.fill();
 
         for (const p of particles) {
           const rx = p.x * cosY - p.z * sinY;
           const rz = p.x * sinY + p.z * cosY;
           const ry = p.y * cosX - rz * sinX;
           const rz2 = p.y * sinX + rz * cosX;
-          const perspective = 58 / (58 + rz2);
+          const perspective = 54 / (54 - rz2);
           const px = centerX + rx * scale * perspective;
           const py = centerY - ry * scale * perspective;
-          const twinkle = 0.68 + Math.sin(time * 0.003 + p.phase) * 0.32;
+          const twinkle = 0.72 + Math.sin(time * 0.0034 + p.phase) * 0.28;
+          const depthAlpha = 0.36 + ((rz2 + 18) / 36) * 0.62;
+          const haloBoost = p.kind === "halo" ? 0.48 : 1;
+          const rimBoost = p.kind === "rim" ? 1.2 : 1;
 
           projected.push({
             x: px,
             y: py,
             z: rz2,
-            r: Math.max(0.5, p.size * perspective * (width < 760 ? 1.05 : 1.18)),
+            r: Math.max(0.36, p.size * perspective * (width < 760 ? 0.96 : 1.24)),
             color: p.color,
-            alpha: Math.min(1, (0.36 + (rz2 + 11) / 28) * twinkle * p.glow)
+            alpha: Math.min(1, depthAlpha * twinkle * p.glow * haloBoost * rimBoost)
           });
         }
 
@@ -356,13 +426,12 @@
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
         for (const p of projected) {
-          ctx.shadowColor = p.color;
-          ctx.shadowBlur = 10 + p.r * 4;
-          ctx.fillStyle = hexToRgba(p.color, p.alpha);
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fill();
+          const sprite = getSprite(p.color);
+          const size = p.r * 5.1;
+          ctx.globalAlpha = p.alpha;
+          ctx.drawImage(sprite, p.x - size / 2, p.y - size / 2, size, size);
         }
+        ctx.globalAlpha = 1;
         ctx.restore();
       }
 
@@ -380,16 +449,14 @@
         drawBackground(now, delta);
         drawHeart(now);
 
-        if (!isDragging) {
-          dragAngle *= 0.985;
-        }
-
         requestAnimationFrame(animate);
       }
 
       function handlePointerDown(event) {
         isDragging = true;
         lastX = event.clientX;
+        dragVelocity = 0;
+        canvas.setPointerCapture?.(event.pointerId);
       }
 
       function handlePointerMove(event) {
@@ -398,19 +465,23 @@
         }
 
         const dx = event.clientX - lastX;
-        dragAngle += dx * 0.008;
+        const delta = Math.max(-34, Math.min(34, dx));
+        manualYaw += delta * 0.012;
+        dragVelocity = delta * 0.0009;
         lastX = event.clientX;
+        event.preventDefault();
       }
 
-      function handlePointerUp() {
+      function handlePointerUp(event) {
         isDragging = false;
+        canvas.releasePointerCapture?.(event.pointerId);
       }
 
       window.addEventListener("resize", resize);
-      window.addEventListener("pointerdown", handlePointerDown);
-      window.addEventListener("pointermove", handlePointerMove);
-      window.addEventListener("pointerup", handlePointerUp);
-      window.addEventListener("pointercancel", handlePointerUp);
+      canvas.addEventListener("pointerdown", handlePointerDown);
+      canvas.addEventListener("pointermove", handlePointerMove, { passive: false });
+      canvas.addEventListener("pointerup", handlePointerUp);
+      canvas.addEventListener("pointercancel", handlePointerUp);
 
       createHeartParticles();
       resize();
