@@ -3,13 +3,16 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>心海花开</title>
-    <meta name="description" content="一片横屏盛开的蓝白粒子爱心。" />
+    <meta name="theme-color" content="#070609" />
+    <title>今晚的星光，刚好偏向你</title>
+    <meta name="description" content="一颗在夜色中缓慢盛开的流光爱心。" />
     <style>
       :root {
-        --text: #f8fbff;
-        --soft: rgba(238, 247, 255, 0.72);
-        --dim: rgba(238, 247, 255, 0.48);
+        color-scheme: dark;
+        --paper: #fffaf7;
+        --rose: #ffc0ca;
+        --soft: rgba(255, 247, 244, 0.7);
+        --dim: rgba(255, 247, 244, 0.48);
       }
 
       * {
@@ -18,144 +21,206 @@
 
       html,
       body {
+        width: 100%;
         min-height: 100%;
         margin: 0;
-        background: #02050b;
-        color: var(--text);
+        background: #070609;
+        color: var(--paper);
         font-family:
-          "Microsoft YaHei",
           "PingFang SC",
-          "Hiragino Sans GB",
+          "Microsoft YaHei",
           "Noto Sans CJK SC",
-          Arial,
           sans-serif;
       }
 
       body {
         overflow: hidden;
+        overscroll-behavior: none;
+        touch-action: none;
       }
 
       .scene {
         position: relative;
+        width: 100%;
         min-height: 100vh;
         min-height: 100svh;
         overflow: hidden;
+        isolation: isolate;
         background:
-          radial-gradient(circle at 50% 72%, rgba(197, 230, 255, 0.12), transparent 27%),
-          radial-gradient(circle at 50% 38%, rgba(93, 166, 255, 0.12), transparent 44%),
-          linear-gradient(180deg, #02050b 0%, #06101a 54%, #02050b 100%);
+          radial-gradient(circle at 50% 34%, rgba(81, 45, 61, 0.14), transparent 34%),
+          linear-gradient(180deg, #070609 0%, #10090d 58%, #070609 100%);
       }
 
       #heartCanvas {
         position: absolute;
         inset: 0;
+        z-index: -2;
         width: 100%;
         height: 100%;
       }
 
-      .back-link {
+      .scene::before {
         position: absolute;
-        top: max(16px, env(safe-area-inset-top));
-        left: max(18px, env(safe-area-inset-left));
-        z-index: 3;
-        color: rgba(238, 247, 255, 0.7);
-        font-size: 0.9rem;
-        text-decoration: none;
+        inset: 0;
+        z-index: -1;
+        background:
+          linear-gradient(180deg, rgba(7, 6, 9, 0.12) 0%, transparent 42%, rgba(7, 6, 9, 0.18) 72%, rgba(7, 6, 9, 0.72) 100%),
+          radial-gradient(ellipse at 50% 42%, transparent 24%, rgba(7, 6, 9, 0.22) 68%, rgba(7, 6, 9, 0.64) 100%);
+        content: "";
+        pointer-events: none;
       }
 
       .caption {
         position: absolute;
         right: max(24px, env(safe-area-inset-right));
-        bottom: max(20px, env(safe-area-inset-bottom));
-        z-index: 2;
-        max-width: 21rem;
-        text-align: right;
+        bottom: max(19px, env(safe-area-inset-bottom));
+        left: max(24px, env(safe-area-inset-left));
+        display: grid;
+        justify-items: center;
+        text-align: center;
+        opacity: 0;
         pointer-events: none;
+        text-shadow: 0 3px 18px rgba(0, 0, 0, 0.9);
+        animation: reveal-copy 1.4s 4.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
 
-      .caption p {
+      .caption .to {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin: 0 0 0.42rem;
+        color: var(--rose);
+        font-size: clamp(0.72rem, 1.7vw, 0.84rem);
+        font-weight: 600;
+      }
+
+      .caption .to::before,
+      .caption .to::after {
+        width: 1.2rem;
+        height: 1px;
+        background: rgba(255, 192, 202, 0.44);
+        content: "";
+      }
+
+      .caption .message {
         margin: 0;
-        color: var(--soft);
-        font-size: clamp(0.86rem, 1.7vw, 1.05rem);
+        color: rgba(255, 250, 247, 0.8);
+        font-size: clamp(0.9rem, 2.05vw, 1.06rem);
+        line-height: 1.75;
+      }
+
+      .caption .message strong {
+        color: #fff;
+        font-weight: 650;
+      }
+
+      .caption .wish {
+        margin: 0.18rem 0 0;
+        color: var(--dim);
+        font-size: clamp(0.72rem, 1.55vw, 0.84rem);
         line-height: 1.7;
-        text-shadow: 0 2px 14px rgba(0, 0, 0, 0.72);
-      }
-
-      .caption strong {
-        display: block;
-        margin-top: 6px;
-        color: #ffffff;
-        font-size: clamp(0.92rem, 1.85vw, 1.12rem);
-        font-weight: 800;
-      }
-
-      .rotate-tip {
-        position: absolute;
-        left: 50%;
-        bottom: max(18px, env(safe-area-inset-bottom));
-        z-index: 4;
-        display: none;
-        width: max-content;
-        max-width: calc(100vw - 40px);
-        padding: 8px 12px;
-        border: 1px solid rgba(238, 247, 255, 0.16);
-        border-radius: 999px;
-        background: rgba(2, 5, 11, 0.58);
-        color: rgba(238, 247, 255, 0.72);
-        font-size: 0.78rem;
-        transform: translateX(-50%);
-        backdrop-filter: blur(10px);
       }
 
       @media (orientation: portrait) {
         .caption {
-          right: 20px;
-          left: 20px;
-          bottom: max(54px, env(safe-area-inset-bottom));
-          max-width: none;
-          text-align: center;
+          bottom: max(7.5vh, env(safe-area-inset-bottom));
         }
 
-        .caption p {
-          font-size: 0.86rem;
+        .caption .to {
+          margin-bottom: 0.65rem;
         }
 
-        .rotate-tip {
-          display: block;
+        .caption .message {
+          font-size: clamp(1rem, 4.2vw, 1.16rem);
+          line-height: 1.85;
+        }
+
+        .caption .wish {
+          max-width: 20rem;
+          margin-top: 0.48rem;
+          font-size: clamp(0.78rem, 3.2vw, 0.92rem);
+        }
+      }
+
+      @media (max-height: 390px) and (orientation: landscape) {
+        .caption {
+          bottom: max(10px, env(safe-area-inset-bottom));
+        }
+
+        .caption .to {
+          margin-bottom: 0.2rem;
+          font-size: 0.72rem;
+        }
+
+        .caption .message {
+          font-size: 0.88rem;
+          line-height: 1.55;
+        }
+
+        .caption .wish {
+          margin-top: 0.06rem;
+          font-size: 0.72rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .caption {
+          opacity: 1;
+          animation: none;
+        }
+      }
+
+      @keyframes reveal-copy {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+          filter: blur(4px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+          filter: blur(0);
         }
       }
     </style>
   </head>
   <body>
-    <main class="scene" aria-label="横屏蓝白粒子爱心">
-      <canvas id="heartCanvas"></canvas>
-      <a class="back-link" href="./index.html">返回</a>
+    <main class="scene" aria-label="流光爱心动画">
+      <canvas id="heartCanvas" aria-hidden="true"></canvas>
       <section class="caption">
-        <p>
-          江大美女，给你看一场光慢慢盛开。<br />
-          不用急着想它是什么意思，
-          <strong>就当今晚的星海，刚好偏向你。</strong>
-        </p>
+        <p class="to">江大美女</p>
+        <p class="message">和你聊天的那些普通时刻，<strong>我都觉得很特别。</strong></p>
+        <p class="wish">如果你愿意，我想陪你把故事慢慢写下去。</p>
       </section>
-      <div class="rotate-tip">横屏看会更像这束光在眼前展开</div>
     </main>
 
     <script>
       const canvas = document.querySelector("#heartCanvas");
-      const ctx = canvas.getContext("2d", { alpha: false });
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const ctx = canvas.getContext("2d", { alpha: false, desynchronized: true });
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const TAU = Math.PI * 2;
 
       let width = 0;
       let height = 0;
       let dpr = 1;
-      let layout = {};
-      let heartDots = [];
-      let streams = [];
-      let waveLines = [];
-      let baseMotes = [];
-      let bloomDust = [];
-      let groundDust = [];
       let startTime = performance.now();
+      let layout = {};
+      let stars = [];
+      let heartParticles = [];
+      let ribbons = [];
+      let filaments = [];
+      let bloomParticles = [];
+      let groundParticles = [];
+      let groundWaves = [];
+      let activeParticleColor = -1;
+
+      const palette = [
+        [255, 246, 242],
+        [255, 190, 202],
+        [255, 218, 179],
+        [211, 207, 255]
+      ];
 
       function rand(min, max) {
         return min + Math.random() * (max - min);
@@ -165,21 +230,23 @@
         return Math.max(min, Math.min(max, value));
       }
 
-      function easeOutCubic(value) {
-        return 1 - Math.pow(1 - value, 3);
+      function smoothstep(min, max, value) {
+        const x = clamp((value - min) / (max - min), 0, 1);
+        return x * x * (3 - 2 * x);
       }
 
-      function heartPoint(t, scale = 1, yOffset = 0) {
-        const x = 16 * Math.pow(Math.sin(t), 3);
-        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      function easeOut(value) {
+        return 1 - Math.pow(1 - clamp(value, 0, 1), 3);
+      }
 
+      function heartLocal(t) {
         return {
-          x: layout.cx + x * layout.scaleX * scale,
-          y: layout.cy + y * layout.scaleY * scale + yOffset
+          x: 16 * Math.pow(Math.sin(t), 3),
+          y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))
         };
       }
 
-      function bezierPoint(curve, t) {
+      function curvePoint(curve, t) {
         const inv = 1 - t;
         const inv2 = inv * inv;
         const t2 = t * t;
@@ -191,9 +258,9 @@
       }
 
       function resize() {
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
         width = window.innerWidth;
         height = window.innerHeight;
+        dpr = Math.min(window.devicePixelRatio || 1, 1.75);
         canvas.width = Math.floor(width * dpr);
         canvas.height = Math.floor(height * dpr);
         canvas.style.width = `${width}px`;
@@ -203,244 +270,264 @@
       }
 
       function createScene() {
-        const landscape = width >= height;
-        const scale = landscape ? Math.min(width / 74, height / 39) : Math.min(width / 38, height / 78);
-        const scaleX = scale * (landscape ? 1.24 : 1);
-        const scaleY = scale * (landscape ? 0.9 : 1);
-        const baseY = landscape ? height * 0.79 : height * 0.47;
+        const landscape = width / height > 1.12;
+        const scaleY = landscape
+          ? Math.min(height / 50.5, width / 82)
+          : Math.min(width / 38.5, height / 64);
+        const scaleX = scaleY * (landscape ? 1.36 : 1.02);
+        const lowPower =
+          (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
+          (navigator.deviceMemory && navigator.deviceMemory <= 4);
+        const density = lowPower ? 0.72 : 1;
 
         layout = {
           landscape,
           cx: width * 0.5,
-          baseX: width * 0.5,
-          baseY,
-          scale,
+          cy: height * (landscape ? 0.34 : 0.285),
+          groundY: height * (landscape ? 0.735 : 0.62),
           scaleX,
           scaleY,
-          cy: baseY - scaleY * 16.3
+          lowPower
         };
 
-        heartDots = [];
-        streams = [];
-        waveLines = [];
-        baseMotes = [];
-        bloomDust = [];
-        groundDust = [];
+        createStars();
+        createHeartParticles(Math.round((landscape ? 6400 : 5200) * density));
+        createRibbons(landscape ? 24 : 20);
+        createFilaments(Math.round((landscape ? 190 : 138) * density));
+        createBloomParticles(Math.round((landscape ? 5200 : 3900) * density));
+        createGroundParticles(Math.round((landscape ? 3600 : 2600) * density));
+        createGroundWaves(landscape ? 26 : 18);
 
-        const dotCount = landscape ? 19000 : 10500;
-        for (let index = 0; index < dotCount; index += 1) {
-          const outline = Math.random() < 0.48;
-          const t = rand(0, Math.PI * 2);
-          const innerScale = outline ? rand(0.955, 1.07) : Math.sqrt(Math.random()) * rand(0.12, 0.95);
-          const point = heartPoint(t, innerScale, rand(-1.8, 1.8));
-          const tip = clamp((point.y - (layout.baseY - layout.scaleY * 4.8)) / (layout.scaleY * 5.9), 0, 1);
-          const outwardX = point.x - layout.cx;
-          const outwardY = point.y - layout.cy;
-          const spreadSide = Math.random() < 0.5 ? -1 : 1;
-          const groundSpread = Math.pow(tip, 1.65);
-          const targetX =
-            point.x +
-            spreadSide * groundSpread * rand(width * 0.07, width * 0.34) +
-            rand(-width * 0.03, width * 0.03) * tip;
-          const targetY = point.y + groundSpread * rand(-height * 0.035, height * 0.145);
+        window.__heartScene = {
+          heartParticles: heartParticles.length,
+          bloomParticles: bloomParticles.length,
+          groundParticles: groundParticles.length,
+          filaments: filaments.length,
+          lowPower
+        };
+      }
 
-          heartDots.push({
-            sx: layout.baseX + rand(-34, 34),
-            sy: layout.baseY + rand(-8, 8),
-            x: targetX,
-            y: targetY,
-            bloomX: outwardX * rand(0.018, 0.075) + spreadSide * groundSpread * rand(26, 82),
-            bloomY: outwardY * rand(0.012, 0.05) + groundSpread * rand(12, 46),
-            size: rand(outline ? 0.24 : 0.16, outline ? 0.82 : 0.56),
-            alpha: rand(outline ? 0.18 : 0.07, outline ? 0.58 : 0.32) * (1 - tip * 0.62),
-            phase: rand(0, Math.PI * 2),
-            delay: rand(0, 0.58),
-            white: Math.random() < 0.28
+      function createStars() {
+        const count = layout.landscape ? 180 : 130;
+        stars = Array.from({ length: count }, (_, index) => ({
+          x: Math.random() * width,
+          y: Math.random() * height * 0.72,
+          radius: Math.random() > 0.92 ? rand(0.65, 1.35) : rand(0.18, 0.62),
+          alpha: rand(0.08, 0.44),
+          phase: rand(0, TAU),
+          speed: rand(0.00035, 0.001),
+          warm: index % 11 === 0
+        }));
+      }
+
+      function createHeartParticles(count) {
+        heartParticles = [];
+
+        for (let index = 0; index < count; index += 1) {
+          const t = rand(0, TAU);
+          const surface = Math.random() < 0.48;
+          const radial = surface ? rand(0.88, 1.035) : Math.pow(Math.random(), 0.72) * 0.92;
+          const point = heartLocal(t);
+          const thickness = surface
+            ? rand(-1.15, 1.15)
+            : rand(-1, 1) * Math.sqrt(Math.max(0, 1 - radial * radial)) * rand(4.6, 8.6);
+          const brightness = surface ? rand(0.34, 0.94) : rand(0.16, 0.66);
+          const colorRoll = Math.random();
+          const colorIndex = colorRoll < 0.58 ? 1 : colorRoll < 0.8 ? 0 : colorRoll < 0.93 ? 2 : 3;
+
+          heartParticles.push({
+            x: point.x * radial,
+            y: point.y * radial,
+            z: thickness,
+            seedX: layout.cx + rand(-18, 18),
+            seedY: layout.groundY + rand(-4, 7),
+            radius: surface ? rand(0.38, 1.22) : rand(0.22, 0.82),
+            alpha: brightness,
+            phase: rand(0, TAU),
+            delay: rand(0, 1),
+            colorIndex,
+            spark: Math.random() < 0.018
           });
         }
 
-        const dustCount = landscape ? 9800 : 5600;
-        for (let index = 0; index < dustCount; index += 1) {
-          let t = rand(Math.PI * 0.08, Math.PI * 1.92);
-          if (Math.abs(t - Math.PI) < 0.32 && Math.random() < 0.82) {
-            t += (t < Math.PI ? -1 : 1) * rand(0.32, 0.72);
-          }
-          const outerScale = rand(1.02, 1.34);
-          const point = heartPoint(t, outerScale, rand(-8, 18));
-          const outwardX = point.x - layout.cx;
-          const outwardY = point.y - layout.cy;
+        heartParticles.sort((a, b) => a.colorIndex - b.colorIndex);
+      }
 
-          bloomDust.push({
-            sx: layout.baseX + rand(-42, 42),
-            sy: layout.baseY + rand(-12, 8),
-            x: point.x + outwardX * rand(0.02, 0.1),
-            y: point.y + outwardY * rand(0.01, 0.07),
-            size: rand(0.18, Math.random() > 0.9 ? 0.86 : 0.54),
-            alpha: rand(0.06, Math.random() > 0.9 ? 0.34 : 0.2),
-            phase: rand(0, Math.PI * 2),
-            delay: rand(0, 0.72),
-            white: Math.random() < 0.34
-          });
-        }
+      function createRibbons(count) {
+        ribbons = Array.from({ length: count }, (_, index) => ({
+          scale: 0.67 + (index / Math.max(1, count - 1)) * 0.39,
+          alpha: rand(0.025, 0.105) * (index > count * 0.72 ? 1.5 : 1),
+          width: rand(0.28, 0.78),
+          phase: rand(0, TAU),
+          color: index % 7 === 0 ? "255, 218, 179" : index % 5 === 0 ? "211, 207, 255" : "255, 190, 202"
+        }));
+      }
 
-        const streamCount = landscape ? 820 : 470;
-        for (let index = 0; index < streamCount; index += 1) {
-          let t = rand(0.02, Math.PI * 1.98);
-          if (Math.abs(t - Math.PI) < 0.36 && Math.random() < 0.86) {
-            t += (t < Math.PI ? -1 : 1) * rand(0.36, 0.84);
-          }
-          const overshoot = Math.random() < 0.56 ? rand(1.1, 1.52) : rand(0.84, 1.08);
-          const end = heartPoint(t, overshoot, rand(-4, 10));
-          const side = end.x - layout.baseX;
-          const arc = rand(-1, 1);
-          const launchX = layout.baseX + side * rand(0.08, 0.38) + rand(-width * 0.08, width * 0.08);
+      function createFilaments(count) {
+        filaments = [];
 
-          streams.push({
-            sx: launchX,
-            sy: layout.baseY + rand(-7, 9),
-            c1x: launchX + side * rand(0.08, 0.24) + arc * rand(18, 72),
-            c1y: layout.baseY - height * rand(0.1, 0.24),
-            c2x: end.x - side * rand(0.08, 0.24) + arc * rand(18, 82),
-            c2y: end.y + height * rand(0.05, 0.18),
-            ex: end.x + rand(-10, 10),
-            ey: end.y + rand(-10, 10),
-            width: rand(0.22, 0.68),
-            alpha: rand(0.018, 0.068),
+        for (let index = 0; index < count; index += 1) {
+          const side = index % 2 === 0 ? -1 : 1;
+          const groundBound = Math.random() < 0.72;
+          const reach = rand(0.2, groundBound ? 0.57 : 0.48) * width;
+          const endY = groundBound
+            ? layout.groundY + rand(-0.025, 0.085) * height
+            : layout.cy + rand(-0.13, 0.34) * height;
+          const startX = layout.cx + side * rand(0, width * 0.035);
+          const lift = groundBound ? rand(0.18, 0.54) * height : rand(0.12, 0.38) * height;
+
+          filaments.push({
+            sx: startX,
+            sy: layout.groundY + rand(-4, 6),
+            c1x: layout.cx + side * rand(0.045, 0.19) * width,
+            c1y: layout.groundY - lift,
+            c2x: layout.cx + side * reach * rand(0.58, 0.9),
+            c2y: endY - rand(0.02, 0.22) * height,
+            ex: layout.cx + side * reach,
+            ey: endY,
+            alpha: rand(0.018, groundBound ? 0.075 : 0.055),
+            width: rand(0.25, 0.92),
+            delay: rand(0, 1.25),
             phase: rand(0, 1),
-            speed: rand(0.08, 0.18),
-            delay: rand(0, 0.62),
-            beads: Array.from({ length: landscape ? 11 : 7 }, () => ({
-              t: rand(0.14, 0.98),
-              r: rand(0.18, 0.78),
-              alpha: rand(0.06, 0.26),
-              phase: rand(0, Math.PI * 2)
-            }))
+            speed: rand(0.7, 1.45),
+            color: Math.random() < 0.12 ? "211, 207, 255" : Math.random() < 0.22 ? "255, 218, 179" : "255, 190, 202"
           });
         }
 
-        const waveCount = landscape ? 58 : 34;
-        for (let index = 0; index < waveCount; index += 1) {
-          waveLines.push({
-            y: layout.baseY + rand(-height * 0.08, height * 0.08),
-            amp: rand(height * 0.012, height * 0.05),
-            freq: rand(0.006, 0.018),
-            phase: rand(0, Math.PI * 2),
-            speed: rand(0.00035, 0.0009),
-            alpha: rand(0.028, 0.105),
-            width: rand(0.24, 0.82)
+      }
+
+      function createBloomParticles(count) {
+        bloomParticles = [];
+
+        for (let index = 0; index < count; index += 1) {
+          const filamentIndex = Math.floor(Math.random() * filaments.length);
+          const pathT = Math.pow(rand(0.08, 1), 0.72);
+          const colorRoll = Math.random();
+
+          bloomParticles.push({
+            filamentIndex,
+            pathT,
+            offsetX: rand(-1, 1) * rand(0.4, 5.8),
+            offsetY: rand(-1, 1) * rand(0.25, 4.2),
+            radius: Math.random() < 0.08 ? rand(0.8, 1.45) : rand(0.18, 0.66),
+            alpha: rand(0.08, Math.random() < 0.12 ? 0.58 : 0.34),
+            phase: rand(0, TAU),
+            delay: rand(0, 0.9),
+            colorIndex: colorRoll < 0.5 ? 1 : colorRoll < 0.75 ? 0 : colorRoll < 0.9 ? 2 : 3
           });
         }
 
-        const moteCount = landscape ? 3600 : 1900;
-        for (let index = 0; index < moteCount; index += 1) {
-          baseMotes.push({
-            x: rand(0, width),
-            y: layout.baseY + rand(-height * 0.05, height * 0.1),
-            r: rand(0.35, 1.6),
-            alpha: rand(0.05, 0.3),
-            phase: rand(0, Math.PI * 2)
-          });
-        }
+        bloomParticles.sort((a, b) => a.colorIndex - b.colorIndex);
+      }
 
-        const groundCount = landscape ? 9200 : 4800;
-        for (let index = 0; index < groundCount; index += 1) {
+      function createGroundParticles(count) {
+        groundParticles = [];
+
+        for (let index = 0; index < count; index += 1) {
           const side = Math.random() < 0.5 ? -1 : 1;
-          const distance = Math.pow(Math.random(), 0.68) * width * (landscape ? 0.58 : 0.46);
-          const x = layout.baseX + side * distance + rand(-18, 18);
-          const y = layout.baseY + rand(-height * 0.075, height * 0.12);
-          const fade = 1 - Math.min(1, Math.abs(x - layout.baseX) / (width * 0.62));
+          const distance = Math.pow(Math.random(), 0.72) * width * 0.55;
+          const x = layout.cx + side * distance + rand(-10, 10);
+          const centerFade = 1 - clamp(Math.abs(x - layout.cx) / (width * 0.62), 0, 1);
 
-          groundDust.push({
-            sx: layout.baseX + rand(-28, 28),
-            sy: layout.baseY + rand(-8, 10),
+          groundParticles.push({
             x,
-            y,
-            r: rand(0.16, Math.random() > 0.9 ? 0.78 : 0.46),
-            alpha: rand(0.04, 0.2) * (0.35 + fade * 0.65),
-            phase: rand(0, Math.PI * 2),
-            delay: rand(0, 0.68),
-            white: Math.random() < 0.26
+            y: layout.groundY + rand(-height * 0.035, height * 0.09),
+            seedX: layout.cx + rand(-16, 16),
+            seedY: layout.groundY + rand(-3, 6),
+            radius: Math.random() < 0.07 ? rand(0.75, 1.35) : rand(0.16, 0.58),
+            alpha: rand(0.06, 0.34) * (0.4 + centerFade * 0.6),
+            phase: rand(0, TAU),
+            delay: rand(0, 1),
+            colorIndex: Math.random() < 0.68 ? 1 : Math.random() < 0.7 ? 0 : 2
           });
         }
+
+        groundParticles.sort((a, b) => a.colorIndex - b.colorIndex);
+      }
+
+      function createGroundWaves(count) {
+        groundWaves = Array.from({ length: count }, (_, index) => ({
+          y: layout.groundY + rand(-height * 0.025, height * 0.055),
+          amp: rand(height * 0.006, height * 0.023),
+          frequency: rand(0.006, 0.017),
+          phase: rand(0, TAU),
+          speed: rand(0.00018, 0.00052),
+          alpha: rand(0.018, 0.07),
+          width: rand(0.24, 0.72),
+          color: index % 8 === 0 ? "211, 207, 255" : "255, 190, 202"
+        }));
       }
 
       function drawBackground(time) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, height);
-        gradient.addColorStop(0, "#02050b");
-        gradient.addColorStop(0.46, "#06101a");
-        gradient.addColorStop(1, "#02050b");
-        ctx.fillStyle = gradient;
+        const background = ctx.createLinearGradient(0, 0, 0, height);
+        background.addColorStop(0, "#070609");
+        background.addColorStop(0.58, "#11090d");
+        background.addColorStop(1, "#070609");
+        ctx.fillStyle = background;
         ctx.fillRect(0, 0, width, height);
 
-        const glow = ctx.createRadialGradient(layout.cx, layout.cy + layout.scale * 6, 0, layout.cx, layout.cy, Math.min(width, height) * 0.58);
-        glow.addColorStop(0, "rgba(104, 179, 255, 0.16)");
-        glow.addColorStop(0.45, "rgba(104, 179, 255, 0.045)");
-        glow.addColorStop(1, "rgba(104, 179, 255, 0)");
-        ctx.fillStyle = glow;
+        const haze = ctx.createRadialGradient(
+          layout.cx,
+          layout.cy + layout.scaleY * 2,
+          0,
+          layout.cx,
+          layout.cy,
+          Math.min(width, height) * 0.63
+        );
+        haze.addColorStop(0, "rgba(126, 58, 78, 0.105)");
+        haze.addColorStop(0.42, "rgba(84, 48, 76, 0.042)");
+        haze.addColorStop(1, "rgba(7, 6, 9, 0)");
+        ctx.fillStyle = haze;
         ctx.fillRect(0, 0, width, height);
 
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        const starCount = layout.landscape ? 150 : 86;
-
-        for (let index = 0; index < starCount; index += 1) {
-          const x = (index * 97) % width;
-          const y = (index * 53) % height;
-          const pulse = 0.32 + Math.sin(time * 0.0014 + index) * 0.18;
-          ctx.fillStyle = `rgba(214, 235, 255, ${pulse * 0.26})`;
+        for (const star of stars) {
+          const twinkle = reducedMotion ? 0.78 : 0.58 + Math.sin(time * star.speed + star.phase) * 0.42;
+          ctx.globalAlpha = star.alpha * twinkle;
+          ctx.fillStyle = star.warm ? "#ffd9c5" : "#eeeaff";
           ctx.beginPath();
-          ctx.arc(x, y, 0.45 + (index % 3) * 0.24, 0, Math.PI * 2);
+          ctx.arc(star.x, star.y, star.radius, 0, TAU);
           ctx.fill();
         }
 
-        ctx.restore();
+        ctx.globalAlpha = 1;
       }
 
-      function drawWaveLines(time) {
+      function drawGroundWaves(time, elapsed) {
+        const reveal = smoothstep(1.3, 4.8, elapsed);
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
 
-        for (const wave of waveLines) {
+        for (const wave of groundWaves) {
           ctx.beginPath();
 
-          for (let x = -30; x <= width + 30; x += 8) {
-            const centerFade = 0.35 + 0.65 * Math.exp(-Math.pow((x - layout.cx) / (width * 0.34), 2));
+          for (let x = -20; x <= width + 20; x += 9) {
+            const centerLift = Math.exp(-Math.pow((x - layout.cx) / (width * 0.28), 2));
             const y =
               wave.y +
-              Math.sin(x * wave.freq + wave.phase + time * wave.speed) * wave.amp * centerFade +
-              Math.sin(x * wave.freq * 0.42 - time * wave.speed * 1.9) * wave.amp * 0.38;
+              Math.sin(x * wave.frequency + wave.phase + time * wave.speed) * wave.amp * (0.42 + centerLift * 0.58);
 
-            if (x === -30) {
+            if (x === -20) {
               ctx.moveTo(x, y);
             } else {
               ctx.lineTo(x, y);
             }
           }
 
-          ctx.strokeStyle = `rgba(181, 221, 255, ${wave.alpha})`;
+          ctx.strokeStyle = `rgba(${wave.color}, ${wave.alpha * reveal})`;
           ctx.lineWidth = wave.width;
-          ctx.lineCap = "round";
           ctx.stroke();
-        }
-
-        for (const mote of baseMotes) {
-          const twinkle = 0.55 + Math.sin(time * 0.002 + mote.phase) * 0.35;
-          ctx.fillStyle = `rgba(224, 242, 255, ${mote.alpha * twinkle})`;
-          ctx.beginPath();
-          ctx.arc(mote.x, mote.y + Math.sin(time * 0.001 + mote.phase) * 2, mote.r, 0, Math.PI * 2);
-          ctx.fill();
         }
 
         ctx.restore();
       }
 
-      function strokeBezierSegment(curve, from, to, alpha, widthValue) {
-        const steps = 18;
+      function strokeCurve(curve, progress, alpha, lineWidth, color) {
+        const steps = Math.max(2, Math.ceil(28 * progress));
         ctx.beginPath();
 
         for (let index = 0; index <= steps; index += 1) {
-          const t = from + (to - from) * (index / steps);
-          const point = bezierPoint(curve, t);
+          const t = progress * (index / steps);
+          const point = curvePoint(curve, t);
 
           if (index === 0) {
             ctx.moveTo(point.x, point.y);
@@ -449,119 +536,34 @@
           }
         }
 
-        ctx.strokeStyle = `rgba(188, 228, 255, ${alpha})`;
-        ctx.lineWidth = widthValue;
+        ctx.strokeStyle = `rgba(${color}, ${alpha})`;
+        ctx.lineWidth = lineWidth;
         ctx.lineCap = "round";
         ctx.stroke();
       }
 
-      function drawTinyLight(x, y, radius, alpha, white = false) {
-        ctx.fillStyle = white ? `rgba(255, 255, 255, ${alpha})` : `rgba(188, 228, 255, ${alpha})`;
-
-        if (radius < 0.72) {
-          ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-          return;
-        }
-
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      function drawStreams(time, elapsed) {
+      function drawFilaments(time, elapsed) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
 
-        for (const stream of streams) {
-          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.5 - stream.delay * 0.58, 0, 1));
-          strokeBezierSegment(stream, 0, reveal, stream.alpha, stream.width);
-
-          for (const bead of stream.beads) {
-            if (bead.t > reveal) {
-              continue;
-            }
-
-            const beadPoint = bezierPoint(stream, bead.t);
-            const pulse = 0.58 + Math.sin(time * 0.003 + bead.phase) * 0.3;
-            drawTinyLight(beadPoint.x, beadPoint.y, bead.r, bead.alpha * Math.max(0.2, pulse), true);
+        for (const filament of filaments) {
+          const reveal = smoothstep(0.8 + filament.delay * 0.5, 4.15 + filament.delay * 0.65, elapsed);
+          if (reveal <= 0) {
+            continue;
           }
 
-          const head = Math.min(reveal, (stream.phase + time * 0.000075 * stream.speed * 60) % 1);
-          const from = clamp(head - 0.08, 0, 1);
-          const to = clamp(head + 0.018, 0, 1);
-          const point = bezierPoint(stream, head);
+          strokeCurve(filament, reveal, filament.alpha * reveal, filament.width, filament.color);
 
-          strokeBezierSegment(stream, from, to, 0.24, stream.width + 0.45);
-
-          const dotGlow = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 5.5);
-          dotGlow.addColorStop(0, "rgba(255, 255, 255, 0.82)");
-          dotGlow.addColorStop(0.36, "rgba(196, 230, 255, 0.24)");
-          dotGlow.addColorStop(1, "rgba(196, 230, 255, 0)");
-          ctx.fillStyle = dotGlow;
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, 5.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        ctx.restore();
-      }
-
-      function drawBloomDust(time, elapsed) {
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-
-        for (const dot of bloomDust) {
-          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.7 - dot.delay * 0.42, 0, 1));
-          const floatX = Math.sin(time * 0.0012 + dot.phase) * (0.8 + dot.size * 1.2);
-          const floatY = Math.cos(time * 0.001 + dot.phase) * (0.55 + dot.size);
-          const x = dot.sx + (dot.x - dot.sx) * reveal + floatX;
-          const y = dot.sy + (dot.y - dot.sy) * reveal + floatY;
-          const twinkle = 0.6 + Math.sin(time * 0.0034 + dot.phase) * 0.3;
-          const alpha = dot.alpha * reveal * Math.max(0.18, twinkle);
-          const radius = dot.size * (0.72 + reveal * 0.42);
-
-          drawTinyLight(x, y, radius, alpha, dot.white);
-        }
-
-        ctx.restore();
-      }
-
-      function drawGroundDust(time, elapsed) {
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-
-        for (const dot of groundDust) {
-          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.4 - dot.delay * 0.38, 0, 1));
-          const x = dot.sx + (dot.x - dot.sx) * reveal + Math.sin(time * 0.001 + dot.phase) * 1.8;
-          const y = dot.sy + (dot.y - dot.sy) * reveal + Math.cos(time * 0.0013 + dot.phase) * 0.9;
-          const twinkle = 0.55 + Math.sin(time * 0.0028 + dot.phase) * 0.28;
-          const alpha = dot.alpha * reveal * Math.max(0.16, twinkle);
-
-          drawTinyLight(x, y, dot.r * (0.8 + reveal * 0.36), alpha, dot.white);
-        }
-
-        ctx.restore();
-      }
-
-      function drawHeartDots(time, elapsed) {
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-
-        for (const dot of heartDots) {
-          const reveal = prefersReducedMotion ? 1 : easeOutCubic(clamp(elapsed / 2.35 - dot.delay * 0.52, 0, 1));
-          const drift = Math.sin(time * 0.0014 + dot.phase) * 0.55;
-          const x = dot.sx + (dot.x + dot.bloomX * drift - dot.sx) * reveal;
-          const y = dot.sy + (dot.y + dot.bloomY * drift - dot.sy) * reveal;
-          const twinkle = 0.68 + Math.sin(time * 0.003 + dot.phase) * 0.28;
-          const alpha = dot.alpha * reveal * Math.max(0.18, twinkle);
-          const radius = dot.size * (0.78 + reveal * 0.45);
-
-          drawTinyLight(x, y, radius, alpha, dot.white);
-
-          if (dot.white && radius > 0.86) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.18})`;
+          const headT = Math.min(reveal, (filament.phase + time * 0.000038 * filament.speed) % 1);
+          if (headT > 0.035) {
+            const head = curvePoint(filament, headT);
+            const glow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, 4.2);
+            glow.addColorStop(0, "rgba(255, 250, 247, 0.72)");
+            glow.addColorStop(0.35, `rgba(${filament.color}, 0.22)`);
+            glow.addColorStop(1, `rgba(${filament.color}, 0)`);
+            ctx.fillStyle = glow;
             ctx.beginPath();
-            ctx.arc(x, y, radius * 2.8, 0, Math.PI * 2);
+            ctx.arc(head.x, head.y, 4.2, 0, TAU);
             ctx.fill();
           }
         }
@@ -569,67 +571,234 @@
         ctx.restore();
       }
 
-      function drawSource(time) {
+      function drawParticle(x, y, radius, alpha, colorIndex) {
+        if (activeParticleColor !== colorIndex) {
+          const color = palette[colorIndex];
+          ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+          activeParticleColor = colorIndex;
+        }
+
+        ctx.globalAlpha = alpha;
+
+        if (radius < 0.78) {
+          ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, TAU);
+          ctx.fill();
+        }
+      }
+
+      function drawBloomParticles(time, elapsed) {
         ctx.save();
         ctx.globalCompositeOperation = "lighter";
+        activeParticleColor = -1;
 
-        const pulse = 0.92 + Math.sin(time * 0.003) * 0.08;
-        const radius = Math.min(width, height) * 0.22;
-        const glow = ctx.createRadialGradient(layout.baseX, layout.baseY, 0, layout.baseX, layout.baseY, radius);
-        glow.addColorStop(0, `rgba(255, 255, 255, ${0.36 * pulse})`);
-        glow.addColorStop(0.08, `rgba(204, 232, 255, ${0.2 * pulse})`);
-        glow.addColorStop(0.28, "rgba(114, 190, 255, 0.08)");
-        glow.addColorStop(1, "rgba(114, 190, 255, 0)");
-        ctx.fillStyle = glow;
-        ctx.beginPath();
-        ctx.arc(layout.baseX, layout.baseY, radius, 0, Math.PI * 2);
-        ctx.fill();
+        for (const particle of bloomParticles) {
+          const filament = filaments[particle.filamentIndex];
+          const reveal = easeOut(
+            smoothstep(1.05 + particle.delay * 0.65, 4.75 + particle.delay * 0.6, elapsed)
+          );
+          if (reveal <= 0) {
+            continue;
+          }
 
-        const line = ctx.createLinearGradient(0, layout.baseY, width, layout.baseY);
-        line.addColorStop(0, "rgba(130, 206, 255, 0)");
-        line.addColorStop(0.28, "rgba(206, 236, 255, 0.36)");
-        line.addColorStop(0.5, "rgba(255, 255, 255, 0.52)");
-        line.addColorStop(0.72, "rgba(206, 236, 255, 0.36)");
-        line.addColorStop(1, "rgba(130, 206, 255, 0)");
-        ctx.strokeStyle = line;
-        ctx.lineWidth = Math.max(1, Math.min(width, height) * 0.006);
-        ctx.beginPath();
-        ctx.moveTo(0, layout.baseY);
-        ctx.lineTo(width, layout.baseY);
-        ctx.stroke();
+          const point = curvePoint(filament, particle.pathT * reveal);
+          const settle = smoothstep(3.1, 5.2, elapsed);
+          const drift = Math.sin(time * 0.0011 + particle.phase);
+          const x = point.x + particle.offsetX * reveal + drift * settle * 0.75;
+          const y = point.y + particle.offsetY * reveal + Math.cos(time * 0.0009 + particle.phase) * settle * 0.45;
+          const twinkle = 0.68 + Math.sin(time * 0.0027 + particle.phase) * 0.32;
 
+          drawParticle(x, y, particle.radius, particle.alpha * reveal * Math.max(0.18, twinkle), particle.colorIndex);
+        }
+
+        ctx.globalAlpha = 1;
         ctx.restore();
       }
 
-      function drawVignette() {
-        const left = ctx.createLinearGradient(0, 0, width * 0.18, 0);
-        left.addColorStop(0, "rgba(0, 0, 0, 0.62)");
-        left.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = left;
-        ctx.fillRect(0, 0, width * 0.18, height);
+      function drawGroundParticles(time, elapsed) {
+        const spread = easeOut(smoothstep(1.15, 4.7, elapsed));
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        activeParticleColor = -1;
 
-        const right = ctx.createLinearGradient(width, 0, width * 0.82, 0);
-        right.addColorStop(0, "rgba(0, 0, 0, 0.62)");
-        right.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = right;
-        ctx.fillRect(width * 0.82, 0, width * 0.18, height);
+        for (const particle of groundParticles) {
+          const reveal = easeOut(clamp(spread - particle.delay * 0.2, 0, 1));
+          if (reveal <= 0) {
+            continue;
+          }
+
+          const arch = Math.sin(reveal * Math.PI) * randlessArch(particle.phase) * height * 0.055;
+          const x = particle.seedX + (particle.x - particle.seedX) * reveal;
+          const y = particle.seedY + (particle.y - particle.seedY) * reveal - arch;
+          const twinkle = 0.64 + Math.sin(time * 0.0023 + particle.phase) * 0.36;
+          drawParticle(x, y, particle.radius, particle.alpha * reveal * Math.max(0.16, twinkle), particle.colorIndex);
+        }
+
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function randlessArch(phase) {
+        return 0.35 + ((Math.sin(phase * 2.17) + 1) * 0.5) * 0.65;
+      }
+
+      function projectHeartPoint(localX, localY, localZ, rotation, breathe) {
+        const cosine = Math.cos(rotation);
+        const sine = Math.sin(rotation);
+        const rotatedX = localX * cosine + localZ * sine;
+        const rotatedZ = -localX * sine + localZ * cosine;
+
+        return {
+          x: layout.cx + rotatedX * layout.scaleX * breathe,
+          y: layout.cy + localY * layout.scaleY * breathe,
+          depth: clamp((rotatedZ + 18) / 36, 0, 1)
+        };
+      }
+
+      function drawHeartRibbons(time, elapsed, rotation, breathe) {
+        const progress = reducedMotion ? 1 : smoothstep(0.55, 3.45, elapsed);
+        if (progress <= 0) {
+          return;
+        }
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+
+        for (const ribbon of ribbons) {
+          const scale = ribbon.scale + Math.sin(time * 0.00055 + ribbon.phase) * 0.004;
+          const offset = Math.sin(time * 0.00042 + ribbon.phase) * 0.72;
+          drawHeartBranch(-1, progress, scale, offset, ribbon, rotation, breathe);
+          drawHeartBranch(1, progress, scale, offset, ribbon, rotation, breathe);
+        }
+
+        const mainRibbon = {
+          alpha: 0.44,
+          width: 1.05,
+          color: "255, 220, 224"
+        };
+        ctx.shadowBlur = 13;
+        ctx.shadowColor = "rgba(255, 158, 177, 0.55)";
+        drawHeartBranch(-1, progress, 1.005, 0, mainRibbon, rotation, breathe);
+        drawHeartBranch(1, progress, 1.005, 0, mainRibbon, rotation, breathe);
+        ctx.restore();
+      }
+
+      function drawHeartBranch(direction, progress, scale, offset, ribbon, rotation, breathe) {
+        const steps = Math.max(2, Math.ceil(92 * progress));
+        ctx.beginPath();
+
+        for (let index = 0; index <= steps; index += 1) {
+          const amount = progress * (index / steps);
+          const t = Math.PI + direction * Math.PI * amount;
+          const local = heartLocal(t);
+          const point = projectHeartPoint(local.x * scale, local.y * scale, offset, rotation, breathe);
+
+          if (index === 0) {
+            ctx.moveTo(point.x, point.y);
+          } else {
+            ctx.lineTo(point.x, point.y);
+          }
+        }
+
+        ctx.strokeStyle = `rgba(${ribbon.color}, ${ribbon.alpha * progress})`;
+        ctx.lineWidth = ribbon.width;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+
+      function drawHeartParticles(time, elapsed, rotation, breathe) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        activeParticleColor = -1;
+
+        for (const particle of heartParticles) {
+          const reveal = easeOut(
+            smoothstep(0.85 + particle.delay * 0.7, 3.85 + particle.delay * 0.8, elapsed)
+          );
+          if (reveal <= 0) {
+            continue;
+          }
+
+          const point = projectHeartPoint(particle.x, particle.y, particle.z, rotation, breathe);
+          const lift = Math.sin(reveal * Math.PI) * (18 + Math.abs(particle.x) * 0.9);
+          const drift = Math.sin(time * 0.00125 + particle.phase) * (0.32 + point.depth * 0.42);
+          const x = particle.seedX + (point.x - particle.seedX) * reveal + drift;
+          const y = particle.seedY + (point.y - particle.seedY) * reveal - lift * (1 - reveal * 0.38);
+          const twinkle = 0.7 + Math.sin(time * 0.0029 + particle.phase) * 0.3;
+          const depthAlpha = 0.42 + point.depth * 0.78;
+          const radius = particle.radius * (0.72 + point.depth * 0.64);
+          const alpha = particle.alpha * reveal * depthAlpha * Math.max(0.2, twinkle);
+
+          drawParticle(x, y, radius, alpha, particle.colorIndex);
+
+          if (particle.spark && reveal > 0.92 && radius > 0.72) {
+            ctx.globalAlpha = alpha * 0.34;
+            ctx.fillStyle = "#fffaf7";
+            ctx.fillRect(x - radius * 3.4, y - 0.3, radius * 6.8, 0.6);
+            ctx.fillRect(x - 0.3, y - radius * 3.4, 0.6, radius * 6.8);
+            activeParticleColor = -1;
+          }
+        }
+
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+
+      function drawSource(time, elapsed) {
+        const reveal = smoothstep(0.05, 1.15, elapsed);
+        const settle = smoothstep(4.2, 7.4, elapsed);
+        const pulse = 0.88 + Math.sin(time * 0.0024) * 0.12;
+        const radius = Math.min(width, height) * (0.1 + reveal * 0.055);
+        const alpha = (0.46 - settle * 0.27) * reveal * pulse;
+
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const glow = ctx.createRadialGradient(layout.cx, layout.groundY, 0, layout.cx, layout.groundY, radius);
+        glow.addColorStop(0, `rgba(255, 250, 247, ${alpha})`);
+        glow.addColorStop(0.12, `rgba(255, 184, 198, ${alpha * 0.56})`);
+        glow.addColorStop(0.42, `rgba(172, 100, 125, ${alpha * 0.18})`);
+        glow.addColorStop(1, "rgba(95, 50, 68, 0)");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.arc(layout.cx, layout.groundY, radius, 0, TAU);
+        ctx.fill();
+
+        const horizon = ctx.createLinearGradient(0, layout.groundY, width, layout.groundY);
+        horizon.addColorStop(0, "rgba(255, 190, 202, 0)");
+        horizon.addColorStop(0.28, `rgba(255, 190, 202, ${0.08 * reveal})`);
+        horizon.addColorStop(0.5, `rgba(255, 244, 240, ${0.28 * reveal * (1 - settle * 0.35)})`);
+        horizon.addColorStop(0.72, `rgba(255, 190, 202, ${0.08 * reveal})`);
+        horizon.addColorStop(1, "rgba(255, 190, 202, 0)");
+        ctx.strokeStyle = horizon;
+        ctx.lineWidth = 0.85;
+        ctx.beginPath();
+        ctx.moveTo(0, layout.groundY);
+        ctx.lineTo(width, layout.groundY);
+        ctx.stroke();
+        ctx.restore();
       }
 
       function animate(now) {
-        const elapsed = prefersReducedMotion ? 4 : (now - startTime) / 1000;
+        const elapsed = reducedMotion ? 10 : (now - startTime) / 1000;
+        const rotation = reducedMotion ? 0.035 : Math.sin(now * 0.00018) * 0.065;
+        const breathe = 1 + Math.sin(now * 0.00105) * 0.012 * smoothstep(3.2, 5.2, elapsed);
+
         drawBackground(now);
-        drawWaveLines(now);
-        drawStreams(now, elapsed);
-        drawGroundDust(now, elapsed);
-        drawBloomDust(now, elapsed);
-        drawHeartDots(now, elapsed);
-        drawSource(now);
-        drawVignette();
+        drawGroundWaves(now, elapsed);
+        drawFilaments(now, elapsed);
+        drawBloomParticles(now, elapsed);
+        drawGroundParticles(now, elapsed);
+        drawHeartRibbons(now, elapsed, rotation, breathe);
+        drawHeartParticles(now, elapsed, rotation, breathe);
+        drawSource(now, elapsed);
+
         requestAnimationFrame(animate);
       }
 
       resize();
-      window.addEventListener("resize", resize);
+      window.addEventListener("resize", resize, { passive: true });
       requestAnimationFrame(animate);
     </script>
   </body>
