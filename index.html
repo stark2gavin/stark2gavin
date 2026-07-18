@@ -3,396 +3,166 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#08070b" />
-    <title>给江大美女的一束光</title>
-    <meta name="description" content="今晚，想请你看一束只为你亮起的光。" />
-    <style>
-      :root {
-        color-scheme: dark;
-        --ink: #08070b;
-        --paper: #fffaf6;
-        --soft: rgba(255, 250, 246, 0.68);
-        --rose: #f49aaa;
-        --rose-bright: #ffd1d8;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html,
-      body {
-        width: 100%;
-        min-height: 100%;
-        margin: 0;
-        background: var(--ink);
-        color: var(--paper);
-        font-family:
-          "PingFang SC",
-          "Microsoft YaHei",
-          "Noto Sans CJK SC",
-          sans-serif;
-      }
-
-      body {
-        overflow: hidden;
-      }
-
-      button,
-      a {
-        font: inherit;
-      }
-
-      .gate {
-        position: relative;
-        display: grid;
-        width: 100%;
-        min-height: 100vh;
-        min-height: 100svh;
-        place-items: center;
-        overflow: hidden;
-        padding:
-          max(34px, env(safe-area-inset-top))
-          max(24px, env(safe-area-inset-right))
-          max(34px, env(safe-area-inset-bottom))
-          max(24px, env(safe-area-inset-left));
-        isolation: isolate;
-        background:
-          radial-gradient(circle at 50% 20%, rgba(77, 63, 91, 0.2), transparent 34%),
-          linear-gradient(180deg, #09080c 0%, #100b12 62%, #08070b 100%);
-      }
-
-      #nightSky {
-        position: absolute;
-        inset: 0;
-        z-index: -2;
-        width: 100%;
-        height: 100%;
-      }
-
-      .veil {
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        background:
-          linear-gradient(180deg, transparent 54%, rgba(8, 7, 11, 0.42) 78%, rgba(8, 7, 11, 0.72) 100%),
-          radial-gradient(circle at 50% 47%, transparent 0 32%, rgba(8, 7, 11, 0.34) 78%);
-        pointer-events: none;
-      }
-
-      .invitation {
-        display: grid;
-        width: min(34rem, 100%);
-        justify-items: center;
-        gap: 0;
-        text-align: center;
-      }
-
-      .light-seed {
-        position: relative;
-        width: 8.5rem;
-        height: 8.5rem;
-        margin-bottom: 2.4rem;
-        animation: seed-float 5s ease-in-out infinite;
-      }
-
-      .light-seed::before {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: #fff;
-        box-shadow:
-          0 0 8px #fff,
-          0 0 22px rgba(255, 209, 216, 0.95),
-          0 0 54px rgba(244, 154, 170, 0.55),
-          0 0 92px rgba(244, 154, 170, 0.24);
-        content: "";
-        transform: translate(-50%, -50%);
-        animation: seed-breathe 2.8s ease-in-out infinite;
-      }
-
-      .light-seed::after {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 76%;
-        height: 32%;
-        border-top: 1px solid rgba(255, 209, 216, 0.18);
-        border-radius: 50%;
-        content: "";
-        transform: translate(-50%, -50%) rotate(-13deg);
-        filter: drop-shadow(0 0 6px rgba(244, 154, 170, 0.24));
-      }
-
-      .eyebrow {
-        display: flex;
-        align-items: center;
-        gap: 0.72rem;
-        margin: 0 0 1.15rem;
-        color: rgba(255, 250, 246, 0.52);
-        font-size: 0.74rem;
-        letter-spacing: 0;
-      }
-
-      .eyebrow::before,
-      .eyebrow::after {
-        width: 1.35rem;
-        height: 1px;
-        background: rgba(244, 154, 170, 0.45);
-        content: "";
-      }
-
-      h1 {
-        margin: 0;
-        font-size: clamp(2.05rem, 8.6vw, 4.4rem);
-        font-weight: 560;
-        line-height: 1.32;
-        letter-spacing: 0;
-        text-wrap: balance;
-        text-shadow: 0 12px 42px rgba(0, 0, 0, 0.38);
-      }
-
-      h1 .name {
-        display: block;
-        margin-bottom: 0.25rem;
-        color: var(--rose-bright);
-        font-size: 0.58em;
-        font-weight: 500;
-      }
-
-      .note {
-        max-width: 24rem;
-        margin: 1.3rem 0 0;
-        color: var(--soft);
-        font-size: clamp(0.95rem, 3.5vw, 1.08rem);
-        line-height: 1.9;
-      }
-
-      .open-button {
-        display: inline-flex;
-        min-width: 10.5rem;
-        min-height: 3.4rem;
-        align-items: center;
-        justify-content: center;
-        gap: 0.7rem;
-        margin-top: 2.25rem;
-        border: 1px solid rgba(255, 209, 216, 0.52);
-        border-radius: 999px;
-        background: rgba(255, 250, 246, 0.96);
-        box-shadow:
-          0 14px 38px rgba(244, 154, 170, 0.14),
-          0 0 0 0 rgba(244, 154, 170, 0.28);
-        color: #27161c;
-        font-size: 1rem;
-        font-weight: 650;
-        text-decoration: none;
-        transition:
-          transform 180ms ease,
-          box-shadow 180ms ease;
-        animation: button-halo 3.2s ease-in-out infinite;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .open-button .arrow {
-        display: inline-grid;
-        width: 1.1rem;
-        height: 1.1rem;
-        place-items: center;
-        color: #9e5262;
-        font-size: 1.2rem;
-        line-height: 1;
-        transform: translateY(-1px);
-      }
-
-      .open-button:active {
-        transform: scale(0.97);
-      }
-
-      .invitation > * {
-        opacity: 0;
-        animation: arrive 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      }
-
-      .invitation .light-seed {
-        animation:
-          arrive 1.1s 80ms cubic-bezier(0.22, 1, 0.36, 1) forwards,
-          seed-float 5s 1.2s ease-in-out infinite;
-      }
-
-      .eyebrow {
-        animation-delay: 340ms;
-      }
-
-      h1 {
-        animation-delay: 510ms;
-      }
-
-      .note {
-        animation-delay: 690ms;
-      }
-
-      .open-button {
-        animation:
-          arrive 900ms 870ms cubic-bezier(0.22, 1, 0.36, 1) forwards,
-          button-halo 3.2s 1.8s ease-in-out infinite;
-      }
-
-      @media (hover: hover) {
-        .open-button:hover {
-          transform: translateY(-2px);
-          box-shadow:
-            0 18px 48px rgba(244, 154, 170, 0.22),
-            0 0 0 7px rgba(244, 154, 170, 0.08);
-        }
-      }
-
-      @media (max-height: 650px) {
-        .light-seed {
-          width: 6rem;
-          height: 6rem;
-          margin-bottom: 1.2rem;
-        }
-
-        .note {
-          margin-top: 0.85rem;
-        }
-
-        .open-button {
-          margin-top: 1.35rem;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        *,
-        *::before,
-        *::after {
-          animation-duration: 1ms !important;
-          animation-delay: 0ms !important;
-        }
-      }
-
-      @keyframes arrive {
-        from {
-          opacity: 0;
-          transform: translateY(18px);
-        }
-
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      @keyframes seed-float {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-
-        50% {
-          transform: translateY(-8px);
-        }
-      }
-
-      @keyframes seed-breathe {
-        0%,
-        100% {
-          opacity: 0.74;
-          transform: translate(-50%, -50%) scale(0.82);
-        }
-
-        50% {
-          opacity: 1;
-          transform: translate(-50%, -50%) scale(1.18);
-        }
-      }
-
-      @keyframes button-halo {
-        0%,
-        100% {
-          box-shadow:
-            0 14px 38px rgba(244, 154, 170, 0.14),
-            0 0 0 0 rgba(244, 154, 170, 0.22);
-        }
-
-        50% {
-          box-shadow:
-            0 16px 44px rgba(244, 154, 170, 0.2),
-            0 0 0 7px rgba(244, 154, 170, 0);
-        }
-      }
-    </style>
+    <meta name="theme-color" content="#0a0709" />
+    <meta name="description" content="一封从星光开始、认真写到结尾的告白。" />
+    <title>写给江大美女的一封信</title>
+    <link rel="preload" href="./assets/images/moonlit-garden.webp" as="image" type="image/webp" />
+    <link rel="stylesheet" href="./assets/css/styles.css" />
   </head>
-  <body>
-    <main class="gate">
-      <canvas id="nightSky" aria-hidden="true"></canvas>
-      <div class="veil" aria-hidden="true"></div>
-      <section class="invitation" aria-label="一封给江大美女的邀请">
-        <div class="light-seed" aria-hidden="true"></div>
-        <p class="eyebrow">给你留了一点今晚的星光</p>
-        <h1>
-          <span class="name">江大美女</span>
-          想请你看一束光
-        </h1>
-        <p class="note">它准备了很久，刚好在你点开的时候盛开。</p>
-        <a class="open-button" href="./heart.html?v=romance-1">
-          <span>打开看看</span>
-          <span class="arrow" aria-hidden="true">›</span>
-        </a>
+  <body class="is-gated">
+    <div class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+      <canvas id="gate-canvas" aria-hidden="true"></canvas>
+      <div class="gate-shade" aria-hidden="true"></div>
+      <div class="gate-content">
+        <div class="gate-kicker"><span></span>PRIVATE LETTER <span></span></div>
+        <p class="gate-for">写给江大美女</p>
+        <h1 id="gate-title">今晚，想请你<br />慢慢看完一封信</h1>
+        <p class="gate-note">不用急着给出答案。<br />只是有一些真心话，想认真说给你听。</p>
+        <button class="primary-action" id="open-letter" type="button">
+          <span>打开这封信</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+      <p class="gate-foot">JULY · A QUIET NIGHT</p>
+    </div>
+
+    <nav class="chapter-nav" aria-label="告白章节">
+      <a href="#starlight" aria-label="星光开场" data-chapter="starlight"></a>
+      <a href="#heartbeat" aria-label="心动时刻" data-chapter="heartbeat"></a>
+      <a href="#constellation" aria-label="心意星座" data-chapter="constellation"></a>
+      <a href="#letter" aria-label="告白信" data-chapter="letter"></a>
+      <a href="#answer" aria-label="最后的问题" data-chapter="answer"></a>
+    </nav>
+
+    <main id="experience" aria-hidden="true">
+      <section class="hero chapter" id="starlight" data-chapter-section="starlight">
+        <canvas id="heart-canvas" aria-hidden="true"></canvas>
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="hero-copy" data-reveal>
+          <p class="chapter-tag">01 / 星光偏向你</p>
+          <h2>有些喜欢，<br />是从期待一条消息开始的。</h2>
+          <p>后来我才发现，那些看起来普通的日子，因为有你参与，便悄悄有了值得期待的光。</p>
+        </div>
+        <a class="scroll-cue" href="#heartbeat" aria-label="继续阅读"><span></span></a>
+      </section>
+
+      <section class="prologue" aria-label="故事序言">
+        <div data-reveal>
+          <span class="quote-mark">“</span>
+          <p>不是突然决定喜欢你。<br />是许多个不经意的瞬间，<br />慢慢把答案写成了你。</p>
+        </div>
+      </section>
+
+      <section class="heartbeat chapter" id="heartbeat" data-chapter-section="heartbeat">
+        <header class="section-intro" data-reveal>
+          <p class="chapter-tag">02 / 慢慢心动</p>
+          <h2>喜欢有迹可循，<br />藏在每一次下意识里。</h2>
+          <p class="intro-note">那些微不足道的小事，在回头看的时候，恰好组成了我一步一步走向你的路。</p>
+        </header>
+
+        <div class="moment-list">
+          <article class="moment" data-reveal>
+            <span class="moment-number">01</span>
+            <div><p class="moment-label">FIRST SIGHT</p><h3>开始注意你</h3><p>不是因为发生了多么戏剧化的事。只是在许多人里，你渐渐成了我总会多看一眼的那个人。</p></div>
+          </article>
+          <article class="moment" data-reveal>
+            <span class="moment-number">02</span>
+            <div><p class="moment-label">EXPECTATION</p><h3>开始期待你</h3><p>看到有趣的事会想发给你，手机亮起时，也会下意识希望屏幕上出现的是你的名字。</p></div>
+          </article>
+          <article class="moment" data-reveal>
+            <span class="moment-number">03</span>
+            <div><p class="moment-label">CARE</p><h3>开始在意你</h3><p>会记得你随口说过的话，也会在你不开心的时候，希望自己能离你近一点。</p></div>
+          </article>
+          <article class="moment" data-reveal>
+            <span class="moment-number">04</span>
+            <div><p class="moment-label">SINCERITY</p><h3>开始认真</h3><p>我不想只把这份心动藏在玩笑里，所以才有了今晚这封不一定完美，却足够认真的信。</p></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="little-things" aria-label="喜欢你的理由">
+        <div class="little-things-inner">
+          <header class="section-intro compact" data-reveal>
+            <p class="chapter-tag dark">关于喜欢</p>
+            <h2>喜欢不是宏大的形容词，<br />而是一些很小、很确定的事。</h2>
+          </header>
+          <div class="reason-list">
+            <article data-reveal><span>一</span><h3>想和你分享</h3><p>遇见好吃的、好玩的、好看的，第一个念头是：你会不会也喜欢。</p></article>
+            <article data-reveal><span>二</span><h3>想认真倾听</h3><p>不只想听你的开心，也想听那些还没有整理好、偶尔有一点乱的情绪。</p></article>
+            <article data-reveal><span>三</span><h3>想慢慢靠近</h3><p>不是闯进你的生活，而是希望在你愿意的时候，拥有一个逐渐走近的位置。</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="constellation chapter" id="constellation" data-chapter-section="constellation">
+        <canvas id="constellation-canvas" aria-hidden="true"></canvas>
+        <div class="constellation-content">
+          <header class="section-intro compact" data-reveal>
+            <p class="chapter-tag">03 / 藏在星星里的话</p>
+            <h2>有三句话，<br />想让你亲手点亮。</h2>
+            <p class="intro-note">轻轻点一下每颗星。</p>
+          </header>
+          <div class="star-map" aria-label="三颗心意星星">
+            <svg class="star-lines" viewBox="0 0 1000 460" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M145 335 C290 170 390 130 505 235 S760 360 865 120" />
+            </svg>
+            <button class="star-node star-one" type="button" data-star="0" aria-pressed="false">
+              <span class="star-dot" aria-hidden="true"></span><small>关于现在</small><strong>很庆幸，最近的生活里有你。</strong>
+            </button>
+            <button class="star-node star-two" type="button" data-star="1" aria-pressed="false">
+              <span class="star-dot" aria-hidden="true"></span><small>关于喜欢</small><strong>这不是一时兴起，是想了很久的认真。</strong>
+            </button>
+            <button class="star-node star-three" type="button" data-star="2" aria-pressed="false">
+              <span class="star-dot" aria-hidden="true"></span><small>关于以后</small><strong>不急着定义未来，只想先认真走向你。</strong>
+            </button>
+          </div>
+          <p class="constellation-line" id="constellation-line" aria-live="polite">星星还在等你。</p>
+        </div>
+      </section>
+
+      <section class="letter chapter" id="letter" data-chapter-section="letter">
+        <div class="letter-heading" data-reveal>
+          <p class="chapter-tag dark">04 / 一封认真的信</p>
+          <h2>说到这里，<br />还是想把心意完整地写给你。</h2>
+        </div>
+        <article class="letter-sheet" data-reveal>
+          <p class="letter-date">写在一个认真又有一点紧张的夜晚</p>
+          <p class="letter-to">江大美女：</p>
+          <div class="letter-body">
+            <p>我不太擅长把“喜欢”说得多漂亮，所以想把它写得诚实一点。</p>
+            <p>我会期待你的消息，会在看到有趣的东西时想起你，也会因为一句普通的晚安，开心很久。和你聊天的那些时刻，看起来没有什么惊天动地，却让我觉得很特别。</p>
+            <p>我喜欢你的方式，不是想催促一个答案，也不是想用浪漫给你压力。我只是希望你知道：在我这里，你不是随便路过的人。</p>
+            <p>我想了解真实的你，包括开心、疲惫和偶尔的小脾气；也想让你慢慢认识真实的我。我们可以从一次散步、一顿饭、一场电影开始，不着急，但认真一点。</p>
+            <p>如果你愿意，我想陪你把接下来的故事，慢慢写下去。</p>
+          </div>
+          <div class="letter-sign"><span>一个想认真靠近你的人</span><i aria-hidden="true">♡</i></div>
+        </article>
+      </section>
+
+      <section class="answer chapter" id="answer" data-chapter-section="answer">
+        <canvas id="finale-canvas" aria-hidden="true"></canvas>
+        <div class="answer-shade" aria-hidden="true"></div>
+        <div class="answer-content" id="answer-content" data-reveal>
+          <p class="chapter-tag">05 / 把答案交给你</p>
+          <p class="answer-prelude">信写到了最后，心意也终于没有藏起来。</p>
+          <h2>江大美女，<br />愿意给我一个<br />更靠近你的机会吗？</h2>
+          <p class="answer-note">不用许诺很远的以后。<br />我们先从下一次见面开始。</p>
+          <div class="answer-actions" role="group" aria-label="你的回应">
+            <button class="primary-action" type="button" data-answer="yes">愿意呀</button>
+            <button class="quiet-action" type="button" data-answer="later">让我想一想</button>
+          </div>
+        </div>
+        <div class="response" id="response" aria-live="polite" hidden>
+          <p class="response-mark" aria-hidden="true">♡</p>
+          <h2 id="response-title"></h2>
+          <p id="response-copy"></p>
+          <button class="replay-action" id="replay" type="button">再看一遍</button>
+        </div>
+        <p class="answer-foot">THE END · AND MAYBE, A BEGINNING</p>
       </section>
     </main>
 
-    <script>
-      const canvas = document.querySelector("#nightSky");
-      const context = canvas.getContext("2d");
-      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      let stars = [];
-      let width = 0;
-      let height = 0;
-      let ratio = 1;
-
-      function resize() {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        ratio = Math.min(window.devicePixelRatio || 1, 2);
-        canvas.width = Math.floor(width * ratio);
-        canvas.height = Math.floor(height * ratio);
-        context.setTransform(ratio, 0, 0, ratio, 0, 0);
-
-        const count = Math.round(Math.min(180, Math.max(90, (width * height) / 6200)));
-        stars = Array.from({ length: count }, (_, index) => ({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          radius: Math.random() > 0.9 ? Math.random() * 1.15 + 0.45 : Math.random() * 0.55 + 0.18,
-          alpha: Math.random() * 0.48 + 0.1,
-          phase: Math.random() * Math.PI * 2,
-          speed: 0.00035 + Math.random() * 0.00065,
-          warm: index % 9 === 0
-        }));
-      }
-
-      function draw(time) {
-        context.clearRect(0, 0, width, height);
-
-        for (const star of stars) {
-          const shimmer = reducedMotion ? 0.8 : 0.62 + Math.sin(time * star.speed + star.phase) * 0.38;
-          context.fillStyle = star.warm
-            ? `rgba(255, 209, 216, ${star.alpha * shimmer})`
-            : `rgba(236, 232, 244, ${star.alpha * shimmer})`;
-          context.beginPath();
-          context.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-          context.fill();
-        }
-
-        requestAnimationFrame(draw);
-      }
-
-      resize();
-      window.addEventListener("resize", resize, { passive: true });
-      requestAnimationFrame(draw);
-    </script>
+    <script src="./assets/js/heart-scene.js"></script>
+    <script src="./assets/js/app.js"></script>
   </body>
 </html>
