@@ -155,7 +155,7 @@
         }
 
         if (litStars === 3) {
-          status.textContent = "三颗星连在一起，刚好是一句：我喜欢你。";
+          status.textContent = "三颗星连在一起，刚好是：今晚有一点想你。";
           status.classList.add("is-complete");
           section.classList.add("is-complete");
         } else {
@@ -180,12 +180,12 @@
         response.hidden = false;
 
         if (willing) {
-          responseTitle.textContent = "那就，从下一次见面开始。";
-          responseCopy.textContent = "谢谢你愿意给我这个机会。以后不用一下子走很远，我们一步一步，慢慢来。";
+          responseTitle.textContent = "那我开始期待下一次见面了。";
+          responseCopy.textContent = "不用安排得多隆重。散散步、吃顿饭，和你待在一起就已经很特别。";
           finaleScene.burst("yes");
         } else {
-          responseTitle.textContent = "好，我把心意安静放在这里。";
-          responseCopy.textContent = "你可以慢慢想。我不会催你，也不会因为答案来得晚，就否定今晚的认真。";
+          responseTitle.textContent = "好，那就顺其自然。";
+          responseCopy.textContent = "不用现在决定什么。我们照常聊天，等某一天刚好都有空，再见面也很好。";
           finaleScene.burst("later");
         }
       });
